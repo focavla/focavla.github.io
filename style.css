@@ -104,13 +104,13 @@ body {
 .authors .author-link {
     display: inline;
     margin: 0 8px;
-    color: #333;
+    color: #0066cc;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .authors .author-link:hover {
-    color: #3498db;
+    color: #0052a3;
     text-decoration: underline;
 }
 
