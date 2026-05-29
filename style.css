@@ -83,9 +83,17 @@ body {
     line-height: 1.8;
 }
 
-.authors span {
+.authors .author-link {
     display: inline;
     margin: 0 8px;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.authors .author-link:hover {
+    color: #3498db;
+    text-decoration: underline;
 }
 
 .affiliations {
