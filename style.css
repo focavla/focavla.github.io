@@ -9,7 +9,7 @@ html {
 }
 
 body {
-    font-family: 'Times New Roman', Times, serif;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #333;
     background: white;
@@ -67,7 +67,7 @@ body {
 }
 
 .conference-logo {
-    height: 80px;
+    height: 12px;
     width: auto;
     margin-top: 15px;
     display: inline-block;
@@ -571,7 +571,7 @@ body {
     color: white;
     padding: 30px;
     border-radius: 10px;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: 'Courier New', monospace;
     overflow-x: auto;
     margin-top: 40px;
     text-align: left;
@@ -579,7 +579,7 @@ body {
 
 .bibtex pre {
     margin: 0;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: 'Courier New', monospace;
     font-size: 0.99rem;
     line-height: 1.5;
 }
