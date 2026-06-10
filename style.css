@@ -496,6 +496,34 @@ body {
     box-shadow: 0 15px 30px rgba(0,0,0,0.1);
 }
 
+.video-pair {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.video-item {
+    flex: 1;
+    max-width: 48%;
+    text-align: center;
+}
+
+.result-video {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    margin-bottom: 10px;
+}
+
+.video-label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.4rem;
+    margin: 0;
+}
+
 /* Video section styling */
 .video-section {
     background: white;
