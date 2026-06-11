@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, FileText, Github, Database, Play } from "lucide-react";
+const TITLE = "FOCA: Future-Oriented Conditioning for Data-Efficient Vision-Language-Action Adaptation";
 
-const TITLE = "Few-Shot Adaptation of Vision-Language-Action Models for Generalist Robot Manipulation";
-const SHORT = "Few-shot adaptation of VLA models with real-world and simulation results.";
+const SHORT = "Parameter-efficient adaptation of Vision-Language-Action models using future-oriented conditioning.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -50,9 +50,9 @@ function SectionHeader({ kicker, title }: { kicker: string; title: string }) {
 }
 
 const realTasks = [
-  { img: "/assets/bag_success.mp4", task: "Pick up the mug and place it on the coaster", success: "8 / 10", shots: 5, baseVideo: "/assets/aloha_gif/bag_failed.mp4", focaVideo: "/assets/aloha_gif/bag_success.mp4" },
-  { img: "/assets/shoe_failed.mp4", task: "Pick up the mug and place it on the coaster", success: "8 / 10", shots: 5, baseVideo: "/assets/aloha_gif/shoes_success.mp4", focaVideo: "/assets/aloha_gif/shoes_success.mp4" },
-  { img: "/assets/table_failed.mp4", task: "Stack the red block on the blue block", success: "9 / 10", shots: 5, baseVideo: "/assets/aloha_gif/table_failed.mp4", focaVideo: "/assets/aloha_gif/table_success.mp4"},
+  { img: "/assets/bag_success.mp4", task: "Use both hands to align the bag, grasp the zipper with the right hand, and pull it smoothly until the green bag is fully opened.", success: "8 / 10", shots: 5, baseVideo: "/assets/aloha_gif/bag_failed.mp4", focaVideo: "/assets/aloha_gif/bag_success.mp4" },
+  { img: "/assets/shoe_failed.mp4", task: "Use both grippers to grasp the shoelaces, cross and tighten them, form a loop with one lace, wrap the other lace around the loop, and pull both ends to tie a secure knot.", success: "8 / 10", shots: 5, baseVideo: "/assets/aloha_gif/shoes_success.mp4", focaVideo: "/assets/aloha_gif/shoes_success.mp4" },
+  { img: "/assets/table_failed.mp4", task: "Place the plate at the center of the mat, then pick up the bowl and place it inside the plate, and finally pick up and place the chopsticks to the right of the plate.", success: "9 / 10", shots: 5, baseVideo: "/assets/aloha_gif/table_failed.mp4", focaVideo: "/assets/aloha_gif/table_success.mp4"},
 ];
 const simTasks = [
   { img: "/assets/libero_bowl.png", task: "Open the top drawer and place the bowl inside", success: "94%", shots: 10 },
@@ -73,31 +73,73 @@ function Index() {
       <header className="relative overflow-hidden">
         <div className="mx-auto max-w-6xl px-6 pt-14 pb-10 md:pt-20">
           <div className="flex flex-wrap items-center gap-2">
-            <Pill>NeurIPS 2026 · Under Review</Pill>
+            <span className="inline-flex items-center gap-2 rounded-full border border-rule/60 bg-card/60 px-3 py-1">
+              <img
+                src="/assets/icml_logo.svg"
+                alt="ICML"
+                className="h-15 w-auto"
+              />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.14em]">
+                ICML 2026
+              </span>
+            </span>
+
             <Pill>Robot Learning</Pill>
             <Pill>Vision-Language-Action</Pill>
           </div>
 
           <h1 className="mt-8 font-serif text-4xl leading-[1.04] tracking-tight md:text-6xl">
-            Few-Shot Adaptation of <span className="text-accent">Vision-Language-Action</span> Models
+            FOCA: Future-Oriented Conditioning for Data-Efficient <span className="text-accent">Vision-Language-Action</span> Adaptation
             <span className="block text-muted-foreground text-3xl md:text-4xl mt-3 font-normal italic">
               learning new manipulation skills from a handful of demonstrations
             </span>
           </h1>
 
           {/* authors */}
-          <div className="mt-8 max-w-3xl text-base text-foreground/90">
+          <div className="mt-8 max-w-5xl text-base text-foreground/90">
             <p className="leading-relaxed">
-              <a className="hover:text-accent" href="#">Author One</a><sup className="text-accent">1</sup>,{" "}
-              <a className="hover:text-accent" href="#">Author Two</a><sup className="text-accent">1,2</sup>,{" "}
-              <a className="hover:text-accent" href="#">Author Three</a><sup className="text-accent">2</sup>,{" "}
-              <a className="hover:text-accent" href="#">Author Four</a><sup className="text-accent">1</sup>,{" "}
-              <a className="hover:text-accent" href="#">Senior Author</a><sup className="text-accent">1,3</sup>
+              Duc Minh Nguyen<sup>*1,2</sup>,{" "}
+              Nghiem Tuong Diep<sup>*1,2</sup>,{" "}
+              Binh Gia Nguyen<sup>*1,2</sup>,{" "}
+              Trong-Bao Ho<sup>1</sup>,{" "}
+              Doanh Le<sup>2</sup>,{" "}
+              Tan Q. Nguyen<sup>1</sup>,{" "}
+              Thien-Loc Ha<sup>1</sup>,{" "}
+              Nhiem Tran<sup>1</sup>,{" "}
+              Bao Thach<sup>1,3</sup>,{" "}
+              Nhat X. Tran<sup>1</sup>,{" "}
+              Tuan A. Tran<sup>4</sup>,{" "}
+              Artur Habuda<sup>5</sup>,{" "}
+              Philip Lund Møller<sup>5</sup>,{" "}
+              Tran Nguyen Le<sup>5</sup>,{" "}
+              Daniel Sonntag<sup>4,6</sup>,{" "}
+              Mathias Niepert<sup>7,8</sup>,{" "}
+              Khoa D. Doan<sup>2</sup>,{" "}
+              Vu Duong<sup>2</sup>,{" "}
+              Hung Quoc Ngo<sup>1</sup>,{" "}
+              Minh N. Vu<sup>1,2</sup>,{" "}
+              Duy M. H. Nguyen<sup>†4,7,8</sup>,{" "}
+              An Thai Le<sup>†1,2</sup>,{" "}
+              Ngo Anh Vien<sup>†1,2</sup>
             </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              <sup className="text-accent">1</sup>Your University &nbsp;·&nbsp;
-              <sup className="text-accent">2</sup>Partner Lab &nbsp;·&nbsp;
-              <sup className="text-accent">3</sup>Industry Collaborator
+
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              * Equal contribution &nbsp; · &nbsp;
+              † Senior Authors
+            </p>
+
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              <sup>1</sup> VinRobotics, Vietnam &nbsp;·&nbsp;
+              <sup>2</sup> Center for AI Research, VinUniversity, Vietnam &nbsp;·&nbsp;
+              <sup>3</sup> University of Utah, USA
+              <br />
+              <sup>4</sup> German Research Center for Artificial Intelligence (DFKI)
+              &nbsp;·&nbsp;
+              <sup>5</sup> Technical University of Denmark
+              <br />
+              <sup>6</sup> University of Oldenburg &nbsp;·&nbsp;
+              <sup>7</sup> University of Stuttgart &nbsp;·&nbsp;
+              <sup>8</sup> Max Planck Research School for Intelligent Systems (IMPRS-IS)
             </p>
           </div>
 
@@ -122,7 +164,7 @@ function Index() {
               className="w-full"
             />
             <figcaption className="border-t border-rule/70 px-5 py-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              Figure 1 — Our policy adapts to new objects, scenes, and instructions from as few as five demonstrations.
+              Figure 1 — Overview of FOCA. Our framework injects future-oriented conditioning into VLA adaptation through explicit future interaction prediction and implicit alignment to future goals, enabling data-efficient learning and action-free co-training with video world models.
             </figcaption>
           </figure>
         </div>
@@ -130,39 +172,59 @@ function Index() {
 
       {/* ABSTRACT */}
       <section className="mx-auto max-w-6xl px-6 pb-16">
-        <SectionHeader kicker="Abstract" title="Generalist robots, specialist behaviors — without retraining the world." />
+        <SectionHeader kicker="Abstract" title="Data-efficient adaptation through future-oriented reasoning." />
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
           <aside className="space-y-4 text-sm">
             <div>
-              <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Trainable params</div>
-              <div className="font-serif text-3xl text-accent">4.2 M</div>
+              <div className="text-[13px] uppercase tracking-[0.18em] text-muted-foreground">
+                LIBERO
+              </div>
+              <div className="font-serif text-3xl">95.7%</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                Beats π0 (100% data) by only <div className="font-serif text-[1.2rem] text-accent">40% data</div> 
+              </div>
             </div>
+
             <div>
-              <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Demos per task</div>
-              <div className="font-serif text-3xl">5 – 10</div>
+              <div className="text-[13px] uppercase tracking-[0.18em] text-muted-foreground">
+                ROBOCASA GAIN
+              </div>
+              <div className="font-serif text-3xl">+7–12%</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                over prior adaptation methods
+              </div>
             </div>
+
             <div>
-              <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Real-world success</div>
-              <div className="font-serif text-3xl">84%</div>
-            </div>
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Sim success</div>
-              <div className="font-serif text-3xl">91%</div>
+              <div className="text-[13px] uppercase tracking-[0.18em] text-muted-foreground">
+                REAL ROBOTS
+              </div>
+              <div className="font-serif text-3xl">+26%</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                absolute improvement
+              </div>
             </div>
           </aside>
 
           <div className="font-serif text-lg leading-[1.7] text-foreground/90">
             <p>
-              Vision-Language-Action (VLA) models trained on internet-scale data exhibit broad, generalist
-              capabilities, yet they routinely <em>fail</em> on specific downstream tasks defined by a
-              particular embodiment, environment, or user. Full fine-tuning recovers performance but is
-              expensive, brittle, and forgets prior skills.
+              Can robots learn new skills from only a handful of demonstrations?
             </p>
+
+            <p>
+              Despite impressive progress, today's Vision-Language-Action (VLA) models struggle in this setting.
+              We show that performance drops sharply as training data becomes scarce, exposing a critical weakness
+              of current <strong>few-shot adaptation</strong> methods.
+            </p>
+
             <p className="mt-4">
-              We introduce a parameter-efficient few-shot adaptation procedure that injects small task-specific
-              modulation streams into a frozen VLA backbone. Given as few as five demonstrations, our method
-              acquires reliable new behaviors while preserving zero-shot generalization on held-out instructions.
-              We evaluate across two simulated benchmarks and a real 7-DoF manipulator on twelve unseen tasks.
+              FOCA addresses this challenge by teaching robots to reason about <strong>future interactions</strong> rather
+              than simply imitate actions. By combining future-oriented prediction with alignment to future goals,
+              FOCA enables efficient adaptation, supports long-horizon decision making, and naturally enables
+              <strong> action-free co-training with video world models</strong> through synthetic video supervision.
+              The result is a simple and scalable framework that achieves
+              <strong> state-of-the-art performance</strong> across simulation and real-world robot
+              manipulation tasks.
             </p>
           </div>
         </div>
@@ -170,7 +232,7 @@ function Index() {
 
       {/* METHOD */}
       <section className="mx-auto max-w-6xl px-6 pb-16">
-        <SectionHeader kicker="Method" title="A frozen backbone, a whisper of new parameters." />
+        <SectionHeader kicker="Method" title="Explicit prediction. Implicit alignment. Better adaptation." />
         <figure className="overflow-hidden rounded-xl border border-rule/70 bg-card">
           {/* <img
             src={teaser}
@@ -190,44 +252,55 @@ function Index() {
             <source src="/assets/teaser.mp4" type="video/mp4" />
           </video>
           <figcaption className="border-t border-rule/70 px-5 py-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            Figure 2 — Adapter modules (orange) are inserted between attention blocks and trained on the demos.
+            Figure 2 — Video overview of FOCA. We predict task-grounded future interactions and align them with future goals to enable data-efficient adaptation and action-free learning.
           </figcaption>
         </figure>
+          <div className="mt-12 space-y-6">
+            {[
+              {
+                n: "01",
+                t: "Explicit Future Prediction",
+                b: "FOCA predicts task-grounded future interaction embeddings in latent space using representative tokens and a lightweight decoder. By focusing on robot-object interactions rather than the entire scene, it captures anticipated outcomes while remaining robust to task-irrelevant content."
+              },
+              {
+                n: "02",
+                t: "Implicit Future Alignment",
+                b: "FOCA aligns interaction tokens with future goal observations through an implicit future-conditioning objective. This enables long-horizon reasoning and can be interpreted as learning value-like representations of future task completion."
+              },
+              {
+                n: "03",
+                t: "Action-Free Supervision",
+                b: "FOCA naturally supports action-free co-training with synthetic videos generated by video world models. Unlike methods that require pseudo-actions or inverse dynamics, FOCA can learn directly from future visual trajectories."
+              },
+            ].map((s) => (
+              <article
+                key={s.n}
+                className="rounded-xl border border-rule/60 bg-card/60 p-8"
+              >
+                <div className="text-[11px] uppercase tracking-[0.22em] text-accent">
+                  Contribution {s.n}
+                </div>
 
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {[
-            { n: "01", t: "Demonstration collection", b: "5–10 teleoperated demos per task, recorded with synchronized RGB and proprioception streams." },
-            { n: "02", t: "Adapter insertion", b: "Lightweight bottleneck adapters are injected at every transformer block of the action decoder." },
-            { n: "03", t: "Few-shot optimization", b: "A short curriculum trains only the adapters with behavior cloning plus an action-consistency regularizer." },
-          ].map((s) => (
-            <article key={s.n} className="rounded-lg border border-rule/60 bg-card/60 p-5">
-              <div className="text-[11px] uppercase tracking-[0.22em] text-accent">Step {s.n}</div>
-              <h3 className="mt-2 font-serif text-xl">{s.t}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.b}</p>
-            </article>
-          ))}
-        </div>
+                <h3 className="mt-3 font-serif text-3xl">
+                  {s.t}
+                </h3>
+
+                <p className="mt-4 max-w-4xl text-base leading-8 text-muted-foreground">
+                  {s.b}
+                </p>
+              </article>
+            ))}
+          </div>
       </section>
 
       {/* REAL-WORLD */}
       <section className="mx-auto max-w-6xl px-6 pb-16">
-        <SectionHeader kicker="Results · Real World" title="Twelve unseen tasks on a Franka Panda." />
+        <SectionHeader kicker="Results · Real World" title="Three tasks on a ALOHA Robot" />
         <div className="grid gap-6">
           {realTasks.map((r) => (
-            // <figure key={r.task} className="overflow-hidden rounded-xl border border-rule/70 bg-card">
-            //   <img src={r.img} alt={r.task} width={800} height={600} loading="lazy" className="aspect-[4/3] w-full object-cover" />
-            //   <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
-            //     <span className="text-sm font-medium">{r.task}</span>
-            //     <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            //       <span>{r.shots} demos</span>
-            //       <span className="font-serif text-base normal-case tracking-normal text-accent">{r.success}</span>
-            //     </div>
-            //   </figcaption>
-            // </figure>
-
               <figure
                 key={r.task}
-                className="overflow-hidden rounded-xl border border-rule/70 bg-card"
+                className="mx-auto max-w-4xl overflow-hidden rounded-xl border border-rule/70 bg-card"
               >
                 <div className="grid grid-cols-2">
                   <div className="relative">
@@ -236,7 +309,7 @@ function Index() {
                     </span>
 
                     <video
-                      className="w-full object-cover"
+                      className="w-full object-contain"
                       autoPlay
                       loop
                       muted
@@ -252,7 +325,7 @@ function Index() {
                     </span>
 
                     <video
-                      className="w-full object-cover"
+                      className="w-full object-contain"
                       autoPlay
                       loop
                       muted
