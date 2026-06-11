@@ -299,6 +299,59 @@ function Index() {
         </div>
       </section>
 
+      {/* TABLE: FOCA vs VLA models */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Comparison" title="FOCA vs wide range of VLA models when using full 100% data" />
+        <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <th className="px-5 py-3 font-medium">Method</th>
+                <th className="px-5 py-3 font-medium">Avg</th>
+                <th className="px-5 py-3 font-medium">10</th>
+                <th className="px-5 py-3 font-medium">Goal</th>
+                <th className="px-5 py-3 font-medium">Object</th>
+                <th className="px-5 py-3 font-medium">Spatial</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { method: "Diff. Policy",  avg: "72.4", d10: "50.5", goal: "68.3", object: "92.5", spatial: "78.3" },
+                { method: "Octo",          avg: "75.1", d10: "51.1", goal: "84.6", object: "85.7", spatial: "78.9" },
+                { method: "Open-VLA",      avg: "76.5", d10: "53.7", goal: "79.2", object: "88.4", spatial: "84.7" },
+                { method: "Spatial-VLA",   avg: "78.1", d10: "55.5", goal: "78.6", object: "89.9", spatial: "88.2" },
+                { method: "CoT-VLA",       avg: "69.0", d10: "87.6", goal: "91.6", object: "87.5", spatial: "81.1" },
+                { method: "DreamVLA",      avg: "92.6", d10: "89.5", goal: "89.5", object: "94.0", spatial: "97.5" },
+                { method: "Groot-N1.0",    avg: "93.9", d10: "90.6", goal: "93.0", object: "97.6", spatial: "94.4" },
+                { method: "Groot-N1.5",    avg: "94.6", d10: "92.8", goal: "92.8", object: "98.4", spatial: "94.4" },
+                { method: "EO-1",          avg: "94.1", d10: "91.4", goal: "98.6", object: "96.6", spatial: "89.8" },
+                { method: "Think-Act",     avg: "84.4", d10: "70.9", goal: "87.1", object: "91.4", spatial: "88.3" },
+                { method: "SmolVLA",       avg: "92.5", d10: "82.0", goal: "96.0", object: "99.0", spatial: "93.0" },
+                { method: "π₀ Fast",       avg: "85.5", d10: "60.2", goal: "88.6", object: "96.8", spatial: "96.4" },
+                { method: "π₀",            avg: "94.6", d10: "90.0", goal: "95.4", object: "98.2", spatial: "94.6" },
+              ].map((row) => (
+                <tr key={row.method} className="border-b border-rule/40">
+                  <td className="px-5 py-4 font-medium">{row.method}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.avg}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.d10}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.goal}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.object}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.spatial}</td>
+                </tr>
+              ))}
+              <tr className="bg-accent/10 last:border-0">
+                <td className="px-5 py-4 font-medium text-accent font-bold">▸ FOCA (Ours)</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">96.6</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">92.4</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">97.4</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">99.8</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">97.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* TABLE */}
       <section className="mx-auto max-w-6xl px-6 pb-16">
         <SectionHeader kicker="Comparison" title="Comparison with general and task-specific PEFT methods for VLA adaptation in LIBERO" />
