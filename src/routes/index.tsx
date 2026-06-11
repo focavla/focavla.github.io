@@ -60,10 +60,10 @@ const simTasks = [
 ];
 
 const baselineRows = [
-  { method: "Zero-shot VLA",       real: "12%", sim: "21%", params: "—" },
-  { method: "Full fine-tuning",    real: "71%", sim: "82%", params: "7.0 B" },
-  { method: "LoRA fine-tuning",    real: "63%", sim: "76%", params: "18 M" },
-  { method: "Ours (few-shot)",     real: "84%", sim: "91%", params: "4.2 M", best: true },
+  { method: "Control-VLA",  d100: "95.6", d40: "91.3", d10: "78.4" },
+  { method: "LoRA (r=64)",  d100: "94.2", d40: "90.2", d10: "78.2" },
+  { method: "DoRA (r=64)",  d100: "94.7", d40: "92.0", d10: "78.6" },
+  { method: "FOCA",         d100: "96.6", d40: "94.0", d10: "85.3", best: true },
 ];
 
 function Index() {
@@ -301,29 +301,63 @@ function Index() {
 
       {/* TABLE */}
       <section className="mx-auto max-w-6xl px-6 pb-16">
-        <SectionHeader kicker="Comparison" title="Average success rate across all evaluated tasks." />
+        <SectionHeader kicker="Comparison" title="Comparison with general and task-specific PEFT methods for VLA adaptation in LIBERO" />
         <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 <th className="px-5 py-3 font-medium">Method</th>
-                <th className="px-5 py-3 font-medium">Real world</th>
-                <th className="px-5 py-3 font-medium">Simulation</th>
-                <th className="px-5 py-3 font-medium text-right">Trainable params</th>
+                <th className="px-5 py-3 font-medium">100%</th>
+                <th className="px-5 py-3 font-medium">40%</th>
+                <th className="px-5 py-3 font-medium">10%</th>
               </tr>
             </thead>
             <tbody>
               {baselineRows.map((row) => (
-                <tr key={row.method} className={`border-b border-rule/40 last:border-0 ${row.best ? "bg-accent/5" : ""}`}>
-                  <td className="px-5 py-4 font-medium">
+                <tr key={row.method} className={`border-b border-rule/40 last:border-0 ${row.best ? "bg-accent/10" : ""}`}>
+                  <td className={`px-5 py-4 font-medium ${row.best ? "text-accent font-bold" : ""}`}>
                     {row.best ? <span className="text-accent">▸ </span> : null}
                     {row.method}
                   </td>
-                  <td className="px-5 py-4 font-serif text-lg">{row.real}</td>
-                  <td className="px-5 py-4 font-serif text-lg">{row.sim}</td>
-                  <td className="px-5 py-4 text-right font-mono text-xs text-muted-foreground">{row.params}</td>
+                  <td className={`px-5 py-4 font-serif text-lg ${row.best ? "text-accent font-bold" : ""}`}>{row.d100}</td>
+                  <td className={`px-5 py-4 font-serif text-lg ${row.best ? "text-accent font-bold" : ""}`}>{row.d40}</td>
+                  <td className={`px-5 py-4 font-serif text-lg ${row.best ? "text-accent font-bold" : ""}`}>{row.d10}</td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* TABLE 2 */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Comparison" title="Performance comparison between FOCA variants and pseudo-actions learned via IGM from DreamGen-generated synthetic videos" />
+        <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <th className="px-5 py-3 font-medium">Data scale</th>
+                <th className="px-5 py-3 font-medium">π0 baseline</th>
+                <th className="px-5 py-3 font-medium">IGM</th>
+                <th className="px-5 py-3 font-medium">FOCA Implicit</th>
+                <th className="px-5 py-3 font-medium">FOCA + DreamGen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-rule/40">
+                <td className="px-5 py-4 font-medium">40% data</td>
+                <td className="px-5 py-4 font-serif text-lg">89.9</td>
+                <td className="px-5 py-4 font-serif text-lg">90.2</td>
+                <td className="px-5 py-4 font-serif text-lg">93.0</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">95.7</td>
+              </tr>
+              <tr className="last:border-0">
+                <td className="px-5 py-4 font-medium">10% data</td>
+                <td className="px-5 py-4 font-serif text-lg">77.6</td>
+                <td className="px-5 py-4 font-serif text-lg">76.8</td>
+                <td className="px-5 py-4 font-serif text-lg">83.6</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">86.4</td>
+              </tr>
             </tbody>
           </table>
         </div>
