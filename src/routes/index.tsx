@@ -1,0 +1,796 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { ArrowUpRight, FileText, Github, Database, Play } from "lucide-react";
+const TITLE = "FOCA: Future-Oriented Conditioning for Data-Efficient Vision-Language-Action Adaptation";
+
+const SHORT = "Parameter-efficient adaptation of Vision-Language-Action models using future-oriented conditioning.";
+
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: "description", content: SHORT },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: SHORT },
+      { property: "og:type", content: "article" },
+    ],
+  }),
+  component: Index,
+});
+
+function Pill({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-rule/60 bg-card/60 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+      {children}
+    </span>
+  );
+}
+
+function LinkBtn({
+  href, icon: Icon, children,
+}: { href: string; icon: React.ComponentType<{ className?: string }>; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      className="group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:bg-accent hover:border-accent"
+    >
+      <Icon className="h-4 w-4" />
+      <span>{children}</span>
+      <ArrowUpRight className="h-3.5 w-3.5 opacity-60 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+    </a>
+  );
+}
+
+function SectionHeader({ kicker, title }: { kicker: string; title: string }) {
+  return (
+    <div className="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">{kicker}</span>
+      <h2 className="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">{title}</h2>
+    </div>
+  );
+}
+
+
+const realTaskRows = [
+  {
+    left: {
+      task:
+        "Use both hands to align the bag, grasp the zipper with the right hand, and pull it smoothly until the green bag is fully opened.",
+      success: "8 / 10",
+      shots: 150,
+      baseVideo: "/assets/realrobot_videos/bag_fail.mp4",
+      focaVideo: "/assets/realrobot_videos/bag_succ.mp4",
+    },
+
+    right: {
+      task:
+        "Dispense a napkin from a container",
+      success: "7 / 10",
+      shots: 100,
+      baseVideo: "/assets/realrobot_videos/dispense_napkin_fail.mp4", 
+      focaVideo: "/assets/realrobot_videos/dispense_napkin_succ.mp4",
+    },
+  },
+
+  {
+    left: {
+      task:
+        "Place the plate at the center of the mat, then pick up the bowl and place it inside the plate, and finally pick up and place the chopsticks to the right of the plate.",
+      success: "9 / 10",
+      shots: 150,
+      baseVideo: "/assets/realrobot_videos/table_fail.mp4",
+      focaVideo: "/assets/realrobot_videos/table_succ.mp4",
+    },
+
+    right: {
+      task:
+        "Use both grippers to grasp the shoelaces, cross and tighten them, form a loop with one lace, wrap the other lace around the loop, and pull both ends to tie a secure knot.",
+      success: "8 / 10",
+      shots: 150,
+      baseVideo: "/assets/realrobot_videos/shoes_fail.mp4",
+      focaVideo: "/assets/realrobot_videos/shoes_succ.mp4",
+    },
+  },
+  {
+    left: {
+      task:
+        "Pick up a bowl containing bulk material and pour the material into a designated target container.",
+      success: "9 / 10",
+      shots: 100,
+      baseVideo: "/assets/realrobot_videos/bulk_fail.mp4",
+      focaVideo: "/assets/realrobot_videos/bulk_succ.mp4",
+    },
+
+    right: {
+      task:
+        "Pick up the chemistry test tube with the prompted content color and place into a designated target.",
+      success: "7 / 10",
+      shots: 100,
+      baseVideo: "/assets/realrobot_videos/tube_fail.mp4",
+      focaVideo: "/assets/realrobot_videos/tube_succ.mp4",
+    },
+  },
+];
+
+const simTaskRows = [
+  {
+    left: {
+      task: "Open the top drawer and place the bowl inside.",
+      success: "94%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/rollout_open_the_top_drawer_and_put_the_bowl_inside_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/rollout_open_the_top_drawer_and_put_the_bowl_inside_success.mp4",
+    },
+
+    right: {
+      task: "Pick up the alphabet soup and place it in the basket.",
+      success: "96%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/rollout_pick_up_the_alphabet_soup_and_place_it_in_the_basket_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/rollout_pick_up_the_alphabet_soup_and_place_it_in_the_basket_success.mp4",
+    },
+  },
+
+  {
+    left: {
+      task: "Pick up the BBQ sauce and place it in the basket.",
+      success: "92%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/rollout_pick_up_the_bbq_sauce_and_place_it_in_the_basket_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/rollout_pick_up_the_bbq_sauce_and_place_it_in_the_basket_success.mp4",
+    },
+
+    right: {
+      task:
+        "Pick up the black bowl between the plate and the ramekin and place it on the plate.",
+      success: "95%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/rollout_pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/rollout_pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_success.mp4",
+    },
+  },
+
+  {
+    left: {
+      task:
+        "Pick up the black bowl from the table center and place it on the plate.",
+      success: "97%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/rollout_pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/rollout_pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_success.mp4",
+    },
+
+    right: {
+      task: "Turn off the front center burner of the stove.",
+      success: "91%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/turn off the front center burner of the stove_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/turn off the front center burner of the stove_success.mp4",
+    },
+  },
+
+  {
+    left: {
+      task: "Pick the mango from the cabinet and place it on the counter.",
+      success: "93%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/pick the mango from the cabinet and place it on the counter_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/pick the mango from the cabinet and place it on the counter_success.mp4",
+    },
+
+    right: {
+      task:
+        "Pick the mug from the counter and place it under the coffee machine dispenser.",
+      success: "90%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/pick the mug from the counter and place it under the coffee machine dispenser_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/pick the mug from the counter and place it under the coffee machine dispenser_success.mp4",
+    },
+  },
+];
+
+const baselineRows = [
+  { method: "Control-VLA",  d100: "95.6", d40: "91.3", d10: "78.4" },
+  { method: "LoRA (r=64)",  d100: "94.2", d40: "90.2", d10: "78.2" },
+  { method: "DoRA (r=64)",  d100: "94.7", d40: "92.0", d10: "78.6" },
+  { method: "FOCA",         d100: "96.6", d40: "94.0", d10: "85.3", best: true },
+];
+
+function Index() {
+  return (
+    <main className="min-h-screen">
+      {/* HERO */}
+      <header className="relative overflow-hidden">
+        <div className="mx-auto max-w-6xl px-6 pt-14 pb-10 md:pt-20">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-rule/60 bg-card/60 px-3 py-1">
+              <img
+                src="/assets/icml_logo.svg"
+                alt="ICML"
+                className="h-15 w-auto"
+              />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.14em]">
+                ICML 2026
+              </span>
+            </span>
+
+            <Pill>Robot Learning</Pill>
+            <Pill>Vision-Language-Action</Pill>
+          </div>
+
+          <h1 className="mt-8 font-serif text-4xl leading-[1.04] tracking-tight md:text-6xl">
+            FOCA: Future-Oriented Conditioning for Data-Efficient <span className="text-accent">Vision-Language-Action</span> Adaptation
+            <span className="block text-muted-foreground text-3xl md:text-4xl mt-3 font-normal italic">
+              learning new manipulation skills from a handful of demonstrations
+            </span>
+          </h1>
+
+          {/* authors */}
+          <div className="mt-8 max-w-5xl text-base text-foreground/90">
+            <p className="leading-relaxed">
+              Duc Minh Nguyen<sup>*1,2</sup>,{" "}
+              Nghiem Tuong Diep<sup>*1,2</sup>,{" "}
+              Binh Gia Nguyen<sup>*1,2</sup>,{" "}
+              Trong-Bao Ho<sup>1</sup>,{" "}
+              Doanh Le<sup>2</sup>,{" "}
+              Tan Q. Nguyen<sup>1</sup>,{" "}
+              Thien-Loc Ha<sup>1</sup>,{" "}
+              Nhiem Tran<sup>1</sup>,{" "}
+              Bao Thach<sup>1,3</sup>,{" "}
+              Nhat X. Tran<sup>1</sup>,{" "}
+              Tuan A. Tran<sup>4</sup>,{" "}
+              Artur Habuda<sup>5</sup>,{" "}
+              Philip Lund Møller<sup>5</sup>,{" "}
+              Tran Nguyen Le<sup>5</sup>,{" "}
+              Daniel Sonntag<sup>4,6</sup>,{" "}
+              Mathias Niepert<sup>7,8</sup>,{" "}
+              Khoa D. Doan<sup>2</sup>,{" "}
+              Vu Duong<sup>2</sup>,{" "}
+              Hung Quoc Ngo<sup>1</sup>,{" "}
+              Minh N. Vu<sup>1,2</sup>,{" "}
+              Duy M. H. Nguyen<sup>†4,7,8</sup>,{" "}
+              An Thai Le<sup>†1,2</sup>,{" "}
+              Ngo Anh Vien<sup>†1,2</sup>
+            </p>
+
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              * Equal contribution &nbsp; · &nbsp;
+              † Senior Authors
+            </p>
+
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              <sup>1</sup> VinRobotics, Vietnam &nbsp;·&nbsp;
+              <sup>2</sup> Center for AI Research, VinUniversity, Vietnam &nbsp;·&nbsp;
+              <sup>3</sup> University of Utah, USA
+              <br />
+              <sup>4</sup> German Research Center for Artificial Intelligence (DFKI)
+              &nbsp;·&nbsp;
+              <sup>5</sup> Technical University of Denmark
+              <br />
+              <sup>6</sup> University of Oldenburg &nbsp;·&nbsp;
+              <sup>7</sup> University of Stuttgart &nbsp;·&nbsp;
+              <sup>8</sup> Max Planck Research School for Intelligent Systems (IMPRS-IS)
+            </p>
+          </div>
+
+          {/* links */}
+          <div className="mt-8 flex flex-wrap gap-3">
+            <LinkBtn href="#" icon={FileText}>Paper</LinkBtn>
+            <LinkBtn href="#" icon={FileText}>arXiv</LinkBtn>
+            <LinkBtn href="#" icon={Github}>Code</LinkBtn>
+            <LinkBtn href="#" icon={Database}>Dataset</LinkBtn>
+            <LinkBtn href="#" icon={Play}>Video</LinkBtn>
+          </div>
+        </div>
+
+        {/* hero figure */}
+        <div className="mx-auto max-w-6xl px-6 pb-16">
+          <figure className="overflow-hidden rounded-xl border border-rule/70 bg-card shadow-sm">
+            <img
+              src="/assets/FOCA.png"
+              alt="Robotic manipulator reaching for an object on a gridded surface."
+              width={1600}
+              height={900}
+              className="w-full"
+            />
+            <figcaption className="border-t border-rule/70 px-5 py-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              Figure 1 — Overview of FOCA. Our framework injects future-oriented conditioning into VLA adaptation through explicit future interaction prediction and implicit alignment to future goals, enabling data-efficient learning and action-free co-training with video world models.
+            </figcaption>
+          </figure>
+        </div>
+      </header>
+
+      {/* ABSTRACT */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Abstract" title="Data-efficient adaptation through future-oriented reasoning." />
+        <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
+          <aside className="space-y-4 text-sm">
+            <div>
+              <div className="text-[13px] uppercase tracking-[0.18em] text-muted-foreground">
+                LIBERO
+              </div>
+              <div className="font-serif text-3xl">95.7%</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                Beats π0 (100% data) by only <div className="font-serif text-[1.2rem] text-accent">40% data</div> 
+              </div>
+            </div>
+
+            <div>
+              <div className="text-[13px] uppercase tracking-[0.18em] text-muted-foreground">
+                ROBOCASA GAIN
+              </div>
+              <div className="font-serif text-3xl">+7–12%</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                over prior adaptation methods
+              </div>
+            </div>
+
+            <div>
+              <div className="text-[13px] uppercase tracking-[0.18em] text-muted-foreground">
+                REAL ROBOTS
+              </div>
+              <div className="font-serif text-3xl">+26%</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                absolute improvement
+              </div>
+            </div>
+          </aside>
+
+          <div className="font-serif text-lg leading-[1.7] text-foreground/90">
+            <p>
+              Can robots learn new skills from only a handful of demonstrations?
+            </p>
+
+            <p>
+              Despite impressive progress, today's Vision-Language-Action (VLA) models struggle in this setting.
+              We show that performance drops sharply as training data becomes scarce, exposing a critical weakness
+              of current <strong>few-shot adaptation</strong> methods.
+            </p>
+
+            <p className="mt-4">
+              FOCA addresses this challenge by teaching robots to reason about <strong>future interactions</strong> rather
+              than simply imitate actions. By combining future-oriented prediction with alignment to future goals,
+              FOCA enables efficient adaptation, supports long-horizon decision making, and naturally enables
+              <strong> action-free co-training with video world models</strong> through synthetic video supervision.
+              The result is a simple and scalable framework that achieves
+              <strong> state-of-the-art performance</strong> across simulation and real-world robot
+              manipulation tasks.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* METHOD */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Method" title="Explicit prediction. Implicit alignment. Better adaptation." />
+        <figure className="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          {/* <img
+            src={teaser}
+            alt="Diagram of the few-shot adaptation pipeline: image input, language encoder, transformer policy, action output."
+            width={1600}
+            height={700}
+            loading="lazy"
+            className="w-full"
+          /> */}
+          <video
+            className="w-full rounded-lg"
+            autoPlay
+            loop
+            playsInline
+            controls
+          >
+            <source src="/assets/teaser.mp4" type="video/mp4" />
+          </video>
+          <figcaption className="border-t border-rule/70 px-5 py-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            Figure 2 — Video overview of FOCA. We predict task-grounded future interactions and align them with future goals to enable data-efficient adaptation and action-free learning.
+          </figcaption>
+        </figure>
+          <div className="mt-12 space-y-6">
+            {[
+              // {
+              //   n: "01",
+              //   t: "Explicit Future Prediction",
+              //   b: "FOCA predicts task-grounded future interaction embeddings in latent space using representative tokens and a lightweight decoder. By focusing on robot-object interactions rather than the entire scene, it captures anticipated outcomes while remaining robust to task-irrelevant content."
+              // },
+              {
+                n: "01",
+                t: "Explicit Future Prediction",
+                b: (
+                  <>
+                    <p>
+                      FOCA predicts task-grounded future interaction embeddings in latent
+                      space using representative tokens and a lightweight decoder. By
+                      focusing on robot-object interactions rather than the entire scene,
+                      it captures anticipated outcomes while remaining robust to
+                      task-irrelevant content.
+                    </p>
+
+                    <img
+                      src="/assets/explicit_overview.png"
+                      alt="Explicit Future Prediction"
+                      className="mx-auto mt-6 max-w-3xl rounded-lg border border-rule/60"
+                    />
+                  </>
+                ),
+              },
+              {
+                n: "02",
+                t: "Implicit Future Alignment",
+                b: (
+                  <>
+                    <p>
+                      FOCA aligns interaction tokens with future goal observations through
+                      an implicit future-conditioning objective. This enables long-horizon
+                      reasoning and can be interpreted as learning value-like
+                      representations of future task completion.
+                    </p>
+
+                    <img
+                      src="/assets/implicit_overview.png"
+                      alt="Implicit Future Alignment"
+                      className="mx-auto mt-6 max-w-4xl rounded-lg border border-rule/60"
+                    />
+                  </>
+                ),
+              },
+              {
+                n: "03",
+                t: "Action-Free Supervision",
+                b: (
+                  <>
+                    <p>
+                      FOCA naturally supports action-free co-training with synthetic videos
+                      generated by video world models. Unlike methods that require
+                      pseudo-actions or inverse dynamics, FOCA can learn directly from
+                      future visual trajectories.
+                    </p>
+
+                    <img
+                      src="/assets/action_free.png"
+                      alt="Action-Free Supervision"
+                      className="mx-auto mt-6 max-w-4xl rounded-lg border border-rule/60"
+                    />
+                  </>
+                ),
+              },
+            ].map((s) => (
+              <article
+                key={s.n}
+                className="rounded-xl border border-rule/60 bg-card/60 p-8"
+              >
+                <div className="text-[11px] uppercase tracking-[0.22em] text-accent">
+                  Contribution {s.n}
+                </div>
+
+                <h3 className="mt-3 font-serif text-3xl">
+                  {s.t}
+                </h3>
+
+                {/* <p className="mt-4 max-w-4xl text-base leading-8 text-muted-foreground">
+                  {s.b}
+                </p> */}
+                <div className="mt-4 max-w-4xl text-base leading-8 text-muted-foreground">
+                  {s.b}
+                </div>
+              </article>
+            ))}
+          </div>
+      </section>
+
+      {/* REAL-WORLD */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader
+          kicker="Results · Real World"
+          title="Six tasks on an ALOHA and UR5 Robot"
+        />
+
+        <div className="grid gap-6">
+          {realTaskRows.map((row, idx) => (
+            <div
+              key={idx}
+              className="grid gap-6 lg:grid-cols-2"
+            >
+              {[row.left, row.right].map((r) => (
+                <figure
+                  key={r.task}
+                  className="overflow-hidden rounded-xl border border-rule/70 bg-card"
+                >
+                  <div className="grid grid-cols-2">
+                    {/* Base VLA */}
+                    <div className="relative">
+                      <span className="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                        Failed
+                      </span>
+                      <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
+                        Base VLA
+                      </span>
+
+                      <video
+                        className="w-full object-contain"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      >
+                        <source src={r.baseVideo} type="video/mp4" />
+                      </video>
+                    </div>
+
+                    {/* FOCA */}
+                    <div className="relative">
+                      <span className="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                        Success
+                      </span>
+
+                      <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
+                        FOCA
+                      </span>
+
+                      <video
+                        className="w-full object-contain"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      >
+                        <source src={r.focaVideo} type="video/mp4" />
+                      </video>
+                    </div>
+                  </div>
+
+                  <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+                    <span className="max-w-[70%] text-sm font-medium leading-relaxed">
+                      {r.task}
+                    </span>
+
+                    <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                      <span>{r.shots} demos</span>
+
+                      <span className="font-serif text-base normal-case tracking-normal text-accent">
+                        {r.success}
+                      </span>
+                    </div>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+
+      {/* SIMULATION */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Results · Simulation" title="Several LIBERO and ROBOCASA tasks." />
+
+        <div className="grid gap-6">
+          {simTaskRows.map((row, idx) => (
+            <div
+              key={idx}
+              className="grid gap-6 lg:grid-cols-2"
+            >
+              {[row.left, row.right].map((r) => (
+                <figure
+                  key={r.task}
+                  className="overflow-hidden rounded-xl border border-rule/70 bg-card"
+                >
+                  <div className="grid grid-cols-2">
+                    {/* Base VLA */}
+                    <div className="relative">
+                      <span className="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                        Failed
+                      </span>
+                      <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
+                        Base VLA
+                      </span>
+
+                      <video
+                        className="w-full object-contain"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      >
+                        <source src={r.baseVideo} type="video/mp4" />
+                      </video>
+                    </div>
+
+                    {/* FOCA */}
+                    <div className="relative">
+                      <span className="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                        Success
+                      </span>
+
+                      <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
+                        FOCA
+                      </span>
+
+                      <video
+                        className="w-full object-contain"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      >
+                        <source src={r.focaVideo} type="video/mp4" />
+                      </video>
+                    </div>
+                  </div>
+
+                  <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+                    <span className="text-sm font-medium">
+                      {r.task}
+                    </span>
+
+                    <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                      <span>{r.shots} demos</span>
+
+                      <span className="font-serif text-base normal-case tracking-normal text-accent">
+                        {r.success}
+                      </span>
+                    </div>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+
+      {/* TABLE: FOCA vs VLA models */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Comparison" title="FOCA vs wide range of VLA models when using full 100% data" />
+        <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <th className="px-5 py-3 font-medium">Method</th>
+                <th className="px-5 py-3 font-medium">Avg</th>
+                <th className="px-5 py-3 font-medium">10</th>
+                <th className="px-5 py-3 font-medium">Goal</th>
+                <th className="px-5 py-3 font-medium">Object</th>
+                <th className="px-5 py-3 font-medium">Spatial</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { method: "Diff. Policy",  avg: "72.4", d10: "50.5", goal: "68.3", object: "92.5", spatial: "78.3" },
+                { method: "Octo",          avg: "75.1", d10: "51.1", goal: "84.6", object: "85.7", spatial: "78.9" },
+                { method: "Open-VLA",      avg: "76.5", d10: "53.7", goal: "79.2", object: "88.4", spatial: "84.7" },
+                { method: "Spatial-VLA",   avg: "78.1", d10: "55.5", goal: "78.6", object: "89.9", spatial: "88.2" },
+                { method: "CoT-VLA",       avg: "69.0", d10: "87.6", goal: "91.6", object: "87.5", spatial: "81.1" },
+                { method: "DreamVLA",      avg: "92.6", d10: "89.5", goal: "89.5", object: "94.0", spatial: "97.5" },
+                { method: "Groot-N1.0",    avg: "93.9", d10: "90.6", goal: "93.0", object: "97.6", spatial: "94.4" },
+                { method: "Groot-N1.5",    avg: "94.6", d10: "92.8", goal: "92.8", object: "98.4", spatial: "94.4" },
+                { method: "EO-1",          avg: "94.1", d10: "91.4", goal: "98.6", object: "96.6", spatial: "89.8" },
+                { method: "Think-Act",     avg: "84.4", d10: "70.9", goal: "87.1", object: "91.4", spatial: "88.3" },
+                { method: "SmolVLA",       avg: "92.5", d10: "82.0", goal: "96.0", object: "99.0", spatial: "93.0" },
+                { method: "π₀ Fast",       avg: "85.5", d10: "60.2", goal: "88.6", object: "96.8", spatial: "96.4" },
+                { method: "π₀",            avg: "94.6", d10: "90.0", goal: "95.4", object: "98.2", spatial: "94.6" },
+              ].map((row) => (
+                <tr key={row.method} className="border-b border-rule/40">
+                  <td className="px-5 py-4 font-medium">{row.method}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.avg}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.d10}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.goal}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.object}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.spatial}</td>
+                </tr>
+              ))}
+              <tr className="bg-accent/10 last:border-0">
+                <td className="px-5 py-4 font-medium text-accent font-bold">▸ FOCA (Ours)</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">96.6</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">92.4</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">97.4</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">99.8</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">97.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      {/* TABLE */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Comparison" title="Comparison with general and task-specific PEFT methods for VLA adaptation in LIBERO" />
+        <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <th className="px-5 py-3 font-medium">Method</th>
+                <th className="px-5 py-3 font-medium">100%</th>
+                <th className="px-5 py-3 font-medium">40%</th>
+                <th className="px-5 py-3 font-medium">10%</th>
+              </tr>
+            </thead>
+            <tbody>
+              {baselineRows.map((row) => (
+                <tr key={row.method} className={`border-b border-rule/40 last:border-0 ${row.best ? "bg-accent/10" : ""}`}>
+                  <td className={`px-5 py-4 font-medium ${row.best ? "text-accent font-bold" : ""}`}>
+                    {row.best ? <span className="text-accent">▸ </span> : null}
+                    {row.method}
+                  </td>
+                  <td className={`px-5 py-4 font-serif text-lg ${row.best ? "text-accent font-bold" : ""}`}>{row.d100}</td>
+                  <td className={`px-5 py-4 font-serif text-lg ${row.best ? "text-accent font-bold" : ""}`}>{row.d40}</td>
+                  <td className={`px-5 py-4 font-serif text-lg ${row.best ? "text-accent font-bold" : ""}`}>{row.d10}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* TABLE 2 */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Comparison" title="Performance comparison between FOCA variants and pseudo-actions learned via IGM from DreamGen-generated synthetic videos" />
+        <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <th className="px-5 py-3 font-medium">Data scale</th>
+                <th className="px-5 py-3 font-medium">π0 baseline</th>
+                <th className="px-5 py-3 font-medium">IGM</th>
+                <th className="px-5 py-3 font-medium">FOCA Implicit</th>
+                <th className="px-5 py-3 font-medium">FOCA + DreamGen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-rule/40">
+                <td className="px-5 py-4 font-medium">40% data</td>
+                <td className="px-5 py-4 font-serif text-lg">89.9</td>
+                <td className="px-5 py-4 font-serif text-lg">90.2</td>
+                <td className="px-5 py-4 font-serif text-lg">93.0</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">95.7</td>
+              </tr>
+              <tr className="last:border-0">
+                <td className="px-5 py-4 font-medium">10% data</td>
+                <td className="px-5 py-4 font-serif text-lg">77.6</td>
+                <td className="px-5 py-4 font-serif text-lg">76.8</td>
+                <td className="px-5 py-4 font-serif text-lg">83.6</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">86.4</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* BIBTEX */}
+      <section className="mx-auto max-w-6xl px-6 pb-24">
+        <SectionHeader kicker="Citation" title="BibTeX" />
+        <pre className="overflow-x-auto rounded-xl border border-rule/70 bg-ink p-6 text-xs leading-relaxed text-paper">
+{`@article{anon2026fewshot,
+  title   = {Few-Shot Adaptation of Vision-Language-Action Models
+             for Generalist Robot Manipulation},
+  author  = {Anonymous Authors},
+  journal = {Preprint},
+  year    = {2026},
+}`}
+        </pre>
+      </section>
+
+      <footer className="border-t border-rule/70">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          <span>© 2026 — Project site template</span>
+          <span>Built for academic use</span>
+        </div>
+      </footer>
+    </main>
+  );
+}
