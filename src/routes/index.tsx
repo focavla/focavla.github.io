@@ -205,10 +205,10 @@ const simTaskRows = [
 ];
 
 const baselineRows = [
-  { method: "Zero-shot VLA",       real: "12%", sim: "21%", params: "—" },
-  { method: "Full fine-tuning",    real: "71%", sim: "82%", params: "7.0 B" },
-  { method: "LoRA fine-tuning",    real: "63%", sim: "76%", params: "18 M" },
-  { method: "Ours (few-shot)",     real: "84%", sim: "91%", params: "4.2 M", best: true },
+  { method: "Control-VLA",  d100: "95.6", d40: "91.3", d10: "78.4" },
+  { method: "LoRA (r=64)",  d100: "94.2", d40: "90.2", d10: "78.2" },
+  { method: "DoRA (r=64)",  d100: "94.7", d40: "92.0", d10: "78.6" },
+  { method: "FOCA",         d100: "96.6", d40: "94.0", d10: "85.3", best: true },
 ];
 
 function Index() {
@@ -496,7 +496,7 @@ function Index() {
       <section className="mx-auto max-w-6xl px-6 pb-16">
         <SectionHeader
           kicker="Results · Real World"
-          title="Three tasks on an ALOHA Robot"
+          title="Six tasks on an ALOHA and UR5 Robot"
         />
 
         <div className="grid gap-6">
@@ -576,7 +576,7 @@ function Index() {
 
       {/* SIMULATION */}
       <section className="mx-auto max-w-6xl px-6 pb-16">
-        <SectionHeader kicker="Results · Simulation" title="LIBERO-Long and a custom kitchen benchmark." />
+        <SectionHeader kicker="Results · Simulation" title="Several LIBERO and ROBOCASA tasks." />
 
         <div className="grid gap-6">
           {simTaskRows.map((row, idx) => (
@@ -652,31 +652,120 @@ function Index() {
         </div>
       </section>
 
-      {/* TABLE */}
+
+      {/* TABLE: FOCA vs VLA models */}
       <section className="mx-auto max-w-6xl px-6 pb-16">
-        <SectionHeader kicker="Comparison" title="Average success rate across all evaluated tasks." />
+        <SectionHeader kicker="Comparison" title="FOCA vs wide range of VLA models when using full 100% data" />
         <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 <th className="px-5 py-3 font-medium">Method</th>
-                <th className="px-5 py-3 font-medium">Real world</th>
-                <th className="px-5 py-3 font-medium">Simulation</th>
-                <th className="px-5 py-3 font-medium text-right">Trainable params</th>
+                <th className="px-5 py-3 font-medium">Avg</th>
+                <th className="px-5 py-3 font-medium">10</th>
+                <th className="px-5 py-3 font-medium">Goal</th>
+                <th className="px-5 py-3 font-medium">Object</th>
+                <th className="px-5 py-3 font-medium">Spatial</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { method: "Diff. Policy",  avg: "72.4", d10: "50.5", goal: "68.3", object: "92.5", spatial: "78.3" },
+                { method: "Octo",          avg: "75.1", d10: "51.1", goal: "84.6", object: "85.7", spatial: "78.9" },
+                { method: "Open-VLA",      avg: "76.5", d10: "53.7", goal: "79.2", object: "88.4", spatial: "84.7" },
+                { method: "Spatial-VLA",   avg: "78.1", d10: "55.5", goal: "78.6", object: "89.9", spatial: "88.2" },
+                { method: "CoT-VLA",       avg: "69.0", d10: "87.6", goal: "91.6", object: "87.5", spatial: "81.1" },
+                { method: "DreamVLA",      avg: "92.6", d10: "89.5", goal: "89.5", object: "94.0", spatial: "97.5" },
+                { method: "Groot-N1.0",    avg: "93.9", d10: "90.6", goal: "93.0", object: "97.6", spatial: "94.4" },
+                { method: "Groot-N1.5",    avg: "94.6", d10: "92.8", goal: "92.8", object: "98.4", spatial: "94.4" },
+                { method: "EO-1",          avg: "94.1", d10: "91.4", goal: "98.6", object: "96.6", spatial: "89.8" },
+                { method: "Think-Act",     avg: "84.4", d10: "70.9", goal: "87.1", object: "91.4", spatial: "88.3" },
+                { method: "SmolVLA",       avg: "92.5", d10: "82.0", goal: "96.0", object: "99.0", spatial: "93.0" },
+                { method: "π₀ Fast",       avg: "85.5", d10: "60.2", goal: "88.6", object: "96.8", spatial: "96.4" },
+                { method: "π₀",            avg: "94.6", d10: "90.0", goal: "95.4", object: "98.2", spatial: "94.6" },
+              ].map((row) => (
+                <tr key={row.method} className="border-b border-rule/40">
+                  <td className="px-5 py-4 font-medium">{row.method}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.avg}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.d10}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.goal}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.object}</td>
+                  <td className="px-5 py-4 font-serif text-lg">{row.spatial}</td>
+                </tr>
+              ))}
+              <tr className="bg-accent/10 last:border-0">
+                <td className="px-5 py-4 font-medium text-accent font-bold">▸ FOCA (Ours)</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">96.6</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">92.4</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">97.4</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">99.8</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">97.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      {/* TABLE */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Comparison" title="Comparison with general and task-specific PEFT methods for VLA adaptation in LIBERO" />
+        <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <th className="px-5 py-3 font-medium">Method</th>
+                <th className="px-5 py-3 font-medium">100%</th>
+                <th className="px-5 py-3 font-medium">40%</th>
+                <th className="px-5 py-3 font-medium">10%</th>
               </tr>
             </thead>
             <tbody>
               {baselineRows.map((row) => (
-                <tr key={row.method} className={`border-b border-rule/40 last:border-0 ${row.best ? "bg-accent/5" : ""}`}>
-                  <td className="px-5 py-4 font-medium">
+                <tr key={row.method} className={`border-b border-rule/40 last:border-0 ${row.best ? "bg-accent/10" : ""}`}>
+                  <td className={`px-5 py-4 font-medium ${row.best ? "text-accent font-bold" : ""}`}>
                     {row.best ? <span className="text-accent">▸ </span> : null}
                     {row.method}
                   </td>
-                  <td className="px-5 py-4 font-serif text-lg">{row.real}</td>
-                  <td className="px-5 py-4 font-serif text-lg">{row.sim}</td>
-                  <td className="px-5 py-4 text-right font-mono text-xs text-muted-foreground">{row.params}</td>
+                  <td className={`px-5 py-4 font-serif text-lg ${row.best ? "text-accent font-bold" : ""}`}>{row.d100}</td>
+                  <td className={`px-5 py-4 font-serif text-lg ${row.best ? "text-accent font-bold" : ""}`}>{row.d40}</td>
+                  <td className={`px-5 py-4 font-serif text-lg ${row.best ? "text-accent font-bold" : ""}`}>{row.d10}</td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* TABLE 2 */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Comparison" title="Performance comparison between FOCA variants and pseudo-actions learned via IGM from DreamGen-generated synthetic videos" />
+        <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                <th className="px-5 py-3 font-medium">Data scale</th>
+                <th className="px-5 py-3 font-medium">π0 baseline</th>
+                <th className="px-5 py-3 font-medium">IGM</th>
+                <th className="px-5 py-3 font-medium">FOCA Implicit</th>
+                <th className="px-5 py-3 font-medium">FOCA + DreamGen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-rule/40">
+                <td className="px-5 py-4 font-medium">40% data</td>
+                <td className="px-5 py-4 font-serif text-lg">89.9</td>
+                <td className="px-5 py-4 font-serif text-lg">90.2</td>
+                <td className="px-5 py-4 font-serif text-lg">93.0</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">95.7</td>
+              </tr>
+              <tr className="last:border-0">
+                <td className="px-5 py-4 font-medium">10% data</td>
+                <td className="px-5 py-4 font-serif text-lg">77.6</td>
+                <td className="px-5 py-4 font-serif text-lg">76.8</td>
+                <td className="px-5 py-4 font-serif text-lg">83.6</td>
+                <td className="px-5 py-4 font-serif text-lg text-accent font-bold">86.4</td>
+              </tr>
             </tbody>
           </table>
         </div>
