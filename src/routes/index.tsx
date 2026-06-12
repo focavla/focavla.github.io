@@ -49,18 +49,14 @@ function SectionHeader({ kicker, title }: { kicker: string; title: string }) {
   );
 }
 
-// const realTasks = [
-//   { img: "/assets/bag_success.mp4", task: "Use both hands to align the bag, grasp the zipper with the right hand, and pull it smoothly until the green bag is fully opened.", success: "8 / 10", shots: 5, baseVideo: "/assets/aloha_gif/bag_failed.mp4", focaVideo: "/assets/aloha_gif/bag_success.mp4" },
-//   { img: "/assets/shoe_failed.mp4", task: "Use both grippers to grasp the shoelaces, cross and tighten them, form a loop with one lace, wrap the other lace around the loop, and pull both ends to tie a secure knot.", success: "8 / 10", shots: 5, baseVideo: "/assets/aloha_gif/shoes_success.mp4", focaVideo: "/assets/aloha_gif/shoes_success.mp4" },
-//   { img: "/assets/table_failed.mp4", task: "Place the plate at the center of the mat, then pick up the bowl and place it inside the plate, and finally pick up and place the chopsticks to the right of the plate.", success: "9 / 10", shots: 5, baseVideo: "/assets/aloha_gif/table_failed.mp4", focaVideo: "/assets/aloha_gif/table_success.mp4"},
-// ];
+
 const realTaskRows = [
   {
     left: {
       task:
         "Use both hands to align the bag, grasp the zipper with the right hand, and pull it smoothly until the green bag is fully opened.",
       success: "8 / 10",
-      shots: 5,
+      shots: 150,
       baseVideo: "/assets/realrobot_videos/bag_fail.mp4",
       focaVideo: "/assets/realrobot_videos/bag_succ.mp4",
     },
@@ -69,7 +65,7 @@ const realTaskRows = [
       task:
         "Dispense a napkin from a container",
       success: "7 / 10",
-      shots: 5,
+      shots: 100,
       baseVideo: "/assets/realrobot_videos/dispense_napkin_fail.mp4", 
       focaVideo: "/assets/realrobot_videos/dispense_napkin_succ.mp4",
     },
@@ -80,7 +76,7 @@ const realTaskRows = [
       task:
         "Place the plate at the center of the mat, then pick up the bowl and place it inside the plate, and finally pick up and place the chopsticks to the right of the plate.",
       success: "9 / 10",
-      shots: 5,
+      shots: 150,
       baseVideo: "/assets/realrobot_videos/table_fail.mp4",
       focaVideo: "/assets/realrobot_videos/table_succ.mp4",
     },
@@ -89,7 +85,7 @@ const realTaskRows = [
       task:
         "Use both grippers to grasp the shoelaces, cross and tighten them, form a loop with one lace, wrap the other lace around the loop, and pull both ends to tie a secure knot.",
       success: "8 / 10",
-      shots: 5,
+      shots: 150,
       baseVideo: "/assets/realrobot_videos/shoes_fail.mp4",
       focaVideo: "/assets/realrobot_videos/shoes_succ.mp4",
     },
@@ -99,7 +95,7 @@ const realTaskRows = [
       task:
         "Pick up a bowl containing bulk material and pour the material into a designated target container.",
       success: "9 / 10",
-      shots: 5,
+      shots: 100,
       baseVideo: "/assets/realrobot_videos/bulk_fail.mp4",
       focaVideo: "/assets/realrobot_videos/bulk_succ.mp4",
     },
@@ -108,16 +104,104 @@ const realTaskRows = [
       task:
         "Pick up the chemistry test tube with the prompted content color and place into a designated target.",
       success: "7 / 10",
-      shots: 5,
+      shots: 100,
       baseVideo: "/assets/realrobot_videos/tube_fail.mp4",
       focaVideo: "/assets/realrobot_videos/tube_succ.mp4",
     },
   },
 ];
 
-const simTasks = [
-  { img: "/assets/libero_bowl.png", task: "Open the top drawer and place the bowl inside", success: "94%", shots: 10 },
-  { img: "/assets/libero_soup.png", task: "Sort cubes by color into matching bins", success: "88%", shots: 10 },
+const simTaskRows = [
+  {
+    left: {
+      task: "Open the top drawer and place the bowl inside.",
+      success: "94%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/rollout_open_the_top_drawer_and_put_the_bowl_inside_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/rollout_open_the_top_drawer_and_put_the_bowl_inside_success.mp4",
+    },
+
+    right: {
+      task: "Pick up the alphabet soup and place it in the basket.",
+      success: "96%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/rollout_pick_up_the_alphabet_soup_and_place_it_in_the_basket_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/rollout_pick_up_the_alphabet_soup_and_place_it_in_the_basket_success.mp4",
+    },
+  },
+
+  {
+    left: {
+      task: "Pick up the BBQ sauce and place it in the basket.",
+      success: "92%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/rollout_pick_up_the_bbq_sauce_and_place_it_in_the_basket_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/rollout_pick_up_the_bbq_sauce_and_place_it_in_the_basket_success.mp4",
+    },
+
+    right: {
+      task:
+        "Pick up the black bowl between the plate and the ramekin and place it on the plate.",
+      success: "95%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/rollout_pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/rollout_pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_success.mp4",
+    },
+  },
+
+  {
+    left: {
+      task:
+        "Pick up the black bowl from the table center and place it on the plate.",
+      success: "97%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/rollout_pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/rollout_pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_success.mp4",
+    },
+
+    right: {
+      task: "Turn off the front center burner of the stove.",
+      success: "91%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/turn off the front center burner of the stove_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/turn off the front center burner of the stove_success.mp4",
+    },
+  },
+
+  {
+    left: {
+      task: "Pick the mango from the cabinet and place it on the counter.",
+      success: "93%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/pick the mango from the cabinet and place it on the counter_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/pick the mango from the cabinet and place it on the counter_success.mp4",
+    },
+
+    right: {
+      task:
+        "Pick the mug from the counter and place it under the coffee machine dispenser.",
+      success: "90%",
+      shots: 10,
+      baseVideo:
+        "/assets/sim_videos/pick the mug from the counter and place it under the coffee machine dispenser_failure.mp4",
+      focaVideo:
+        "/assets/sim_videos/pick the mug from the counter and place it under the coffee machine dispenser_success.mp4",
+    },
+  },
 ];
 
 const baselineRows = [
@@ -429,6 +513,9 @@ function Index() {
                   <div className="grid grid-cols-2">
                     {/* Base VLA */}
                     <div className="relative">
+                      <span className="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                        Failed
+                      </span>
                       <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
                         Base VLA
                       </span>
@@ -446,6 +533,89 @@ function Index() {
 
                     {/* FOCA */}
                     <div className="relative">
+                      <span className="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                        Success
+                      </span>
+
+                      <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
+                        FOCA
+                      </span>
+
+                      <video
+                        className="w-full object-contain"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      >
+                        <source src={r.focaVideo} type="video/mp4" />
+                      </video>
+                    </div>
+                  </div>
+
+                  <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+                    <span className="max-w-[70%] text-sm font-medium leading-relaxed">
+                      {r.task}
+                    </span>
+
+                    <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                      <span>{r.shots} demos</span>
+
+                      <span className="font-serif text-base normal-case tracking-normal text-accent">
+                        {r.success}
+                      </span>
+                    </div>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+
+      {/* SIMULATION */}
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <SectionHeader kicker="Results · Simulation" title="LIBERO-Long and a custom kitchen benchmark." />
+
+        <div className="grid gap-6">
+          {simTaskRows.map((row, idx) => (
+            <div
+              key={idx}
+              className="grid gap-6 lg:grid-cols-2"
+            >
+              {[row.left, row.right].map((r) => (
+                <figure
+                  key={r.task}
+                  className="overflow-hidden rounded-xl border border-rule/70 bg-card"
+                >
+                  <div className="grid grid-cols-2">
+                    {/* Base VLA */}
+                    <div className="relative">
+                      <span className="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                        Failed
+                      </span>
+                      <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
+                        Base VLA
+                      </span>
+
+                      <video
+                        className="w-full object-contain"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      >
+                        <source src={r.baseVideo} type="video/mp4" />
+                      </video>
+                    </div>
+
+                    {/* FOCA */}
+                    <div className="relative">
+                      <span className="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                        Success
+                      </span>
+
                       <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
                         FOCA
                       </span>
@@ -478,26 +648,6 @@ function Index() {
                 </figure>
               ))}
             </div>
-          ))}
-        </div>
-      </section>
-
-
-      {/* SIMULATION */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
-        <SectionHeader kicker="Results · Simulation" title="LIBERO-Long and a custom kitchen benchmark." />
-        <div className="grid gap-6 md:grid-cols-2">
-          {simTasks.map((r) => (
-            <figure key={r.task} className="overflow-hidden rounded-xl border border-rule/70 bg-card">
-              <img src={r.img} alt={r.task} width={800} height={600} loading="lazy" className="aspect-[4/3] w-full object-cover" />
-              <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
-                <span className="text-sm font-medium">{r.task}</span>
-                <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                  <span>{r.shots} demos</span>
-                  <span className="font-serif text-base normal-case tracking-normal text-accent">{r.success}</span>
-                </div>
-              </figcaption>
-            </figure>
           ))}
         </div>
       </section>
