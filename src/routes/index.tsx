@@ -49,11 +49,72 @@ function SectionHeader({ kicker, title }: { kicker: string; title: string }) {
   );
 }
 
-const realTasks = [
-  { img: "/assets/bag_success.mp4", task: "Use both hands to align the bag, grasp the zipper with the right hand, and pull it smoothly until the green bag is fully opened.", success: "8 / 10", shots: 5, baseVideo: "/assets/aloha_gif/bag_failed.mp4", focaVideo: "/assets/aloha_gif/bag_success.mp4" },
-  { img: "/assets/shoe_failed.mp4", task: "Use both grippers to grasp the shoelaces, cross and tighten them, form a loop with one lace, wrap the other lace around the loop, and pull both ends to tie a secure knot.", success: "8 / 10", shots: 5, baseVideo: "/assets/aloha_gif/shoes_success.mp4", focaVideo: "/assets/aloha_gif/shoes_success.mp4" },
-  { img: "/assets/table_failed.mp4", task: "Place the plate at the center of the mat, then pick up the bowl and place it inside the plate, and finally pick up and place the chopsticks to the right of the plate.", success: "9 / 10", shots: 5, baseVideo: "/assets/aloha_gif/table_failed.mp4", focaVideo: "/assets/aloha_gif/table_success.mp4"},
+// const realTasks = [
+//   { img: "/assets/bag_success.mp4", task: "Use both hands to align the bag, grasp the zipper with the right hand, and pull it smoothly until the green bag is fully opened.", success: "8 / 10", shots: 5, baseVideo: "/assets/aloha_gif/bag_failed.mp4", focaVideo: "/assets/aloha_gif/bag_success.mp4" },
+//   { img: "/assets/shoe_failed.mp4", task: "Use both grippers to grasp the shoelaces, cross and tighten them, form a loop with one lace, wrap the other lace around the loop, and pull both ends to tie a secure knot.", success: "8 / 10", shots: 5, baseVideo: "/assets/aloha_gif/shoes_success.mp4", focaVideo: "/assets/aloha_gif/shoes_success.mp4" },
+//   { img: "/assets/table_failed.mp4", task: "Place the plate at the center of the mat, then pick up the bowl and place it inside the plate, and finally pick up and place the chopsticks to the right of the plate.", success: "9 / 10", shots: 5, baseVideo: "/assets/aloha_gif/table_failed.mp4", focaVideo: "/assets/aloha_gif/table_success.mp4"},
+// ];
+const realTaskRows = [
+  {
+    left: {
+      task:
+        "Use both hands to align the bag, grasp the zipper with the right hand, and pull it smoothly until the green bag is fully opened.",
+      success: "8 / 10",
+      shots: 5,
+      baseVideo: "/assets/realrobot_videos/bag_fail.mp4",
+      focaVideo: "/assets/realrobot_videos/bag_succ.mp4",
+    },
+
+    right: {
+      task:
+        "Dispense a napkin from a container",
+      success: "7 / 10",
+      shots: 5,
+      baseVideo: "/assets/realrobot_videos/dispense_napkin_fail.mp4", 
+      focaVideo: "/assets/realrobot_videos/dispense_napkin_succ.mp4",
+    },
+  },
+
+  {
+    left: {
+      task:
+        "Place the plate at the center of the mat, then pick up the bowl and place it inside the plate, and finally pick up and place the chopsticks to the right of the plate.",
+      success: "9 / 10",
+      shots: 5,
+      baseVideo: "/assets/realrobot_videos/table_fail.mp4",
+      focaVideo: "/assets/realrobot_videos/table_succ.mp4",
+    },
+
+    right: {
+      task:
+        "Use both grippers to grasp the shoelaces, cross and tighten them, form a loop with one lace, wrap the other lace around the loop, and pull both ends to tie a secure knot.",
+      success: "8 / 10",
+      shots: 5,
+      baseVideo: "/assets/realrobot_videos/shoes_fail.mp4",
+      focaVideo: "/assets/realrobot_videos/shoes_succ.mp4",
+    },
+  },
+  {
+    left: {
+      task:
+        "Pick up a bowl containing bulk material and pour the material into a designated target container.",
+      success: "9 / 10",
+      shots: 5,
+      baseVideo: "/assets/realrobot_videos/bulk_fail.mp4",
+      focaVideo: "/assets/realrobot_videos/bulk_succ.mp4",
+    },
+
+    right: {
+      task:
+        "Pick up the chemistry test tube with the prompted content color and place into a designated target.",
+      success: "7 / 10",
+      shots: 5,
+      baseVideo: "/assets/realrobot_videos/tube_fail.mp4",
+      focaVideo: "/assets/realrobot_videos/tube_succ.mp4",
+    },
+  },
 ];
+
 const simTasks = [
   { img: "/assets/libero_bowl.png", task: "Open the top drawer and place the bowl inside", success: "94%", shots: 10 },
   { img: "/assets/libero_soup.png", task: "Sort cubes by color into matching bins", success: "88%", shots: 10 },
@@ -349,59 +410,74 @@ function Index() {
 
       {/* REAL-WORLD */}
       <section className="mx-auto max-w-6xl px-6 pb-16">
-        <SectionHeader kicker="Results · Real World" title="Three tasks on a ALOHA Robot" />
+        <SectionHeader
+          kicker="Results · Real World"
+          title="Three tasks on an ALOHA Robot"
+        />
+
         <div className="grid gap-6">
-          {realTasks.map((r) => (
-              <figure
-                key={r.task}
-                className="mx-auto max-w-4xl overflow-hidden rounded-xl border border-rule/70 bg-card"
-              >
-                <div className="grid grid-cols-2">
-                  <div className="relative">
-                    <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
-                      Base VLA
-                    </span>
+          {realTaskRows.map((row, idx) => (
+            <div
+              key={idx}
+              className="grid gap-6 lg:grid-cols-2"
+            >
+              {[row.left, row.right].map((r) => (
+                <figure
+                  key={r.task}
+                  className="overflow-hidden rounded-xl border border-rule/70 bg-card"
+                >
+                  <div className="grid grid-cols-2">
+                    {/* Base VLA */}
+                    <div className="relative">
+                      <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
+                        Base VLA
+                      </span>
 
-                    <video
-                      className="w-full object-contain"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    >
-                      <source src={r.baseVideo} type="video/mp4" />
-                    </video>
+                      <video
+                        className="w-full object-contain"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      >
+                        <source src={r.baseVideo} type="video/mp4" />
+                      </video>
+                    </div>
+
+                    {/* FOCA */}
+                    <div className="relative">
+                      <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
+                        FOCA
+                      </span>
+
+                      <video
+                        className="w-full object-contain"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      >
+                        <source src={r.focaVideo} type="video/mp4" />
+                      </video>
+                    </div>
                   </div>
 
-                  <div className="relative">
-                    <span className="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">
-                      FOCA
+                  <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+                    <span className="text-sm font-medium">
+                      {r.task}
                     </span>
 
-                    <video
-                      className="w-full object-contain"
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    >
-                      <source src={r.focaVideo} type="video/mp4" />
-                    </video>
-                  </div>
-                </div>
+                    <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                      <span>{r.shots} demos</span>
 
-                <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
-                  <span className="text-sm font-medium">{r.task}</span>
-
-                  <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                    <span>{r.shots} demos</span>
-
-                    <span className="font-serif text-base normal-case tracking-normal text-accent">
-                      {r.success}
-                    </span>
-                  </div>
-                </figcaption>
-              </figure>
+                      <span className="font-serif text-base normal-case tracking-normal text-accent">
+                        {r.success}
+                      </span>
+                    </div>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
           ))}
         </div>
       </section>
