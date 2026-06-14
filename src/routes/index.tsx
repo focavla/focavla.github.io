@@ -314,7 +314,7 @@ function Index() {
                     <img
                       src={logo.src}
                       alt={logo.alt}
-                      className={logo.className ?? "max-h-16 max-w-full object-contain"}
+                      className={"max-h-16 max-w-full object-contain"}
                     />
                   </div>
                 ))}
