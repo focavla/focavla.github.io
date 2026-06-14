@@ -111,6 +111,19 @@ const realTaskRows = [
   },
 ];
 
+const additionalRealTasks = [
+  {
+    task: "Lower your hand, align it with the two pins on the jig, place it precisely into position, and release your hand.",
+    shots: 100,
+    video: "/assets/realrobot_videos/part_placing_vrh3.mp4",
+  },
+  {
+    task: "Lower your hand, align it with the two pins on the jig, place it precisely into position, and release your hand.",
+    shots: 150,
+    video: "/assets/realrobot_videos/part-placing_gr00tn1.5_paint.MOV",
+  },
+];
+
 const simTaskRows = [
   {
     left: {
@@ -286,6 +299,50 @@ function Index() {
               <sup>7</sup> University of Stuttgart &nbsp;·&nbsp;
               <sup>8</sup> Max Planck Research School for Intelligent Systems (IMPRS-IS)
             </p>
+            <div className="mt-8 space-y-8">
+              {/* Row 1 */}
+              <div className="flex flex-wrap items-center justify-center gap-10">
+                {[
+                  { src: "/assets/vinrobotics_logo_v2.svg", alt: "VinRobotics" },
+                  { src: "/assets/vinuniversity_logo.jpg", alt: "VinUniversity" },
+                  { src: "/assets/dfki_logo.png", alt: "DFKI" },
+                ].map((logo) => (
+                  <div
+                    key={logo.alt}
+                    className="flex h-28 w-56 items-center justify-center rounded-xl border border-rule/50 bg-white px-5"
+                  >
+                    <img
+                      src={logo.src}
+                      alt={logo.alt}
+                      className={logo.className ?? "max-h-16 max-w-full object-contain"}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Row 2 */}
+              <div className="flex flex-wrap items-center justify-center gap-10">
+                {[
+                  { src: "/assets/mpi_logo_v2.png", alt: "IMPRS-IS" },
+                  {src: "/assets/university-of-stuttgart-logo.png", alt: "University of Stuttgart", className: "max-h-22 max-w-full object-contain",},
+                  // { src: "/assets/eth-zurich_logo.jpg", alt: "ETH Zurich" },
+                  // { src: "/assets/hhu_logo.png", alt: "HHU" },
+                  // { src: "/assets/utah_logo.png", alt: "UTAH" },
+
+                ].map((logo) => (
+                  <div
+                    key={logo.alt}
+                    className="flex h-28 w-56 items-center justify-center rounded-xl border border-rule/50 bg-white px-5"
+                  >
+                    <img
+                      src={logo.src}
+                      alt={logo.alt}
+                      className={logo.className ?? "max-h-16 max-w-full object-contain"}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* links */}
@@ -554,25 +611,65 @@ function Index() {
                   </div>
 
                   <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
-                    <span className="max-w-[70%] text-sm font-medium leading-relaxed">
+                    <span className="max-w-[100%] text-sm font-medium leading-relaxed">
                       {r.task}
                     </span>
 
-                    <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    {/* <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                       <span>{r.shots} demos</span>
 
                       <span className="font-serif text-base normal-case tracking-normal text-accent">
                         {r.success}
                       </span>
-                    </div>
+                    </div> */}
                   </figcaption>
                 </figure>
               ))}
             </div>
           ))}
         </div>
-      </section>
 
+
+        {/* Success-only tasks */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {additionalRealTasks.map((task) => (
+            <figure
+              key={task.task}
+              className="overflow-hidden rounded-xl border border-rule/70 bg-card"
+            >
+              <div className="relative h-[280px] overflow-hidden">
+                <span className="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">
+                  Success
+                </span>
+
+                <video
+                  className="h-full w-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                >
+                  <source src={task.video} type="video/mp4" />
+                </video>
+              </div>
+
+              <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+                <span className="max-w-[100%] text-sm font-medium leading-relaxed">
+                  {task.task}
+                </span>
+
+                {/* <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                  <span>{task.shots} demos</span>
+
+                  <span className="font-serif text-base normal-case tracking-normal text-accent">
+                    Success
+                  </span>
+                </div> */}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
 
       {/* SIMULATION */}
       <section className="mx-auto max-w-6xl px-6 pb-16">
@@ -637,13 +734,13 @@ function Index() {
                       {r.task}
                     </span>
 
-                    <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    {/* <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                       <span>{r.shots} demos</span>
 
                       <span className="font-serif text-base normal-case tracking-normal text-accent">
                         {r.success}
                       </span>
-                    </div>
+                    </div> */}
                   </figcaption>
                 </figure>
               ))}
@@ -775,12 +872,11 @@ function Index() {
       <section className="mx-auto max-w-6xl px-6 pb-24">
         <SectionHeader kicker="Citation" title="BibTeX" />
         <pre className="overflow-x-auto rounded-xl border border-rule/70 bg-ink p-6 text-xs leading-relaxed text-paper">
-{`@article{anon2026fewshot,
-  title   = {Few-Shot Adaptation of Vision-Language-Action Models
-             for Generalist Robot Manipulation},
-  author  = {Anonymous Authors},
-  journal = {Preprint},
-  year    = {2026},
+{`@inproceedings{foca2026,
+    title={FOCA: Future-Oriented Conditioning for Data-Efficient Vision-Language-Action Adaptation},
+    author={Nguyen, Duc Minh and Diep, Nghiem Tuong and Nguyen, Binh Gia and Ho, Trong-Bao and Le, Doanh and Nguyen, Tan Q. and Ha, Thien-Loc and Tran, Nhiem and Thach, Bao and Tran, Nhat X. and Tran, Tuan A. and Habuda, Artur and Møller, Philip Lund and Le, Tran Nguyen and Sonntag, Daniel and Niepert, Mathias and Doan, Khoa D. and Duong, Vu and Ngo, Hung Quoc and Vu, Minh N. and Nguyen, Duy M. H. and Le, An Thai and Vien, Ngo Anh},
+    booktitle={International Conference on Machine Learning (ICML)},
+    year={2026}
 }`}
         </pre>
       </section>
