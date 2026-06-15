@@ -54,8 +54,8 @@ const realTaskRows = [
   {
     left: {
       task:
-        "Use both hands to align the bag, grasp the zipper with the right hand, and pull it smoothly until the green bag is fully opened.",
-      success: "8 / 10",
+        "Align the bag and fully open the zipper.",
+      success: "25% -> 45%",
       shots: 150,
       baseVideo: "/assets/realrobot_videos/bag_fail.mp4",
       focaVideo: "/assets/realrobot_videos/bag_succ.mp4",
@@ -64,7 +64,7 @@ const realTaskRows = [
     right: {
       task:
         "Dispense a napkin from a container",
-      success: "7 / 10",
+      success: "20% -> 45%",
       shots: 100,
       baseVideo: "/assets/realrobot_videos/dispense_napkin_fail.mp4", 
       focaVideo: "/assets/realrobot_videos/dispense_napkin_succ.mp4",
@@ -74,8 +74,8 @@ const realTaskRows = [
   {
     left: {
       task:
-        "Place the plate at the center of the mat, then pick up the bowl and place it inside the plate, and finally pick up and place the chopsticks to the right of the plate.",
-      success: "9 / 10",
+        "Center the plate on the mat, place the bowl inside it, and set the chopsticks on the right.",
+      success: "10% -> 45%",
       shots: 150,
       baseVideo: "/assets/realrobot_videos/table_fail.mp4",
       focaVideo: "/assets/realrobot_videos/table_succ.mp4",
@@ -83,8 +83,8 @@ const realTaskRows = [
 
     right: {
       task:
-        "Use both grippers to grasp the shoelaces, cross and tighten them, form a loop with one lace, wrap the other lace around the loop, and pull both ends to tie a secure knot.",
-      success: "8 / 10",
+        "Tie the shoelaces into a secure knot.",
+      success: "70% -> 95%",
       shots: 150,
       baseVideo: "/assets/realrobot_videos/shoes_fail.mp4",
       focaVideo: "/assets/realrobot_videos/shoes_succ.mp4",
@@ -94,7 +94,7 @@ const realTaskRows = [
     left: {
       task:
         "Pick up a bowl containing bulk material and pour the material into a designated target container.",
-      success: "9 / 10",
+      success: "40% -> 50%",
       shots: 100,
       baseVideo: "/assets/realrobot_videos/bulk_fail.mp4",
       focaVideo: "/assets/realrobot_videos/bulk_succ.mp4",
@@ -102,9 +102,9 @@ const realTaskRows = [
 
     right: {
       task:
-        "Pick up the chemistry test tube with the prompted content color and place into a designated target.",
-      success: "7 / 10",
-      shots: 100,
+        "Move the prompted-color test tube to the target.",
+      success: "5% -> 30%",
+      shots: 40,
       baseVideo: "/assets/realrobot_videos/tube_fail.mp4",
       focaVideo: "/assets/realrobot_videos/tube_succ.mp4",
     },
@@ -113,13 +113,15 @@ const realTaskRows = [
 
 const additionalRealTasks = [
   {
-    task: "Lower your hand, align it with the two pins on the jig, place it precisely into position, and release your hand.",
+    task: "Place the object onto the jig by aligning with the pins.",
     shots: 100,
+    success: "58% -> 84%",
     video: "/assets/realrobot_videos/part_placing_vrh3.mp4",
   },
   {
-    task: "Lower your hand, align it with the two pins on the jig, place it precisely into position, and release your hand.",
-    shots: 150,
+    task: "Place the object onto the jig by aligning with the pins.",
+    shots: 100,
+    success: "58% -> 84%",
     video: "/assets/realrobot_videos/part-placing_gr00tn1.5_paint.MOV",
   },
 ];
@@ -218,10 +220,10 @@ const simTaskRows = [
 ];
 
 const baselineRows = [
-  { method: "Control-VLA",  d100: "95.6", d40: "91.3", d10: "78.4" },
-  { method: "LoRA (r=64)",  d100: "94.2", d40: "90.2", d10: "78.2" },
-  { method: "DoRA (r=64)",  d100: "94.7", d40: "92.0", d10: "78.6" },
-  { method: "FOCA",         d100: "96.6", d40: "94.0", d10: "85.3", best: true },
+  { method: "Control-VLA (Li et al., CoRL 2025)",  d100: "95.6", d40: "91.3", d10: "78.4" },
+  { method: "LoRA (r=64) (Hu et al., Microsoft 2021)",  d100: "94.2", d40: "90.2", d10: "78.2" },
+  { method: "DoRA (r=64) (Liu et al., ICML 2024)",  d100: "94.7", d40: "92.0", d10: "78.6" },
+  { method: "FOCA (ours)",         d100: "96.6", d40: "94.0", d10: "85.3", best: true },
 ];
 
 function Index() {
@@ -233,7 +235,7 @@ function Index() {
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-2 rounded-full border border-rule/60 bg-card/60 px-3 py-1">
               <img
-                src="/assets/icml_logo.svg"
+                src="/assets/logo/icml_logo.svg"
                 alt="ICML"
                 className="h-15 w-auto"
               />
@@ -303,18 +305,17 @@ function Index() {
               {/* Row 1 */}
               <div className="flex flex-wrap items-center justify-center gap-10">
                 {[
-                  { src: "/assets/vinrobotics_logo_v2.svg", alt: "VinRobotics" },
-                  { src: "/assets/vinuniversity_logo.jpg", alt: "VinUniversity" },
-                  { src: "/assets/dfki_logo.png", alt: "DFKI" },
+                  { src: "/assets/logo/vinrobotics_logo_v2.svg", alt: "VinRobotics", className: "h-10 w-auto object-contain" },
+                  { src: "/assets/logo/vinuniversity_logo.jpg", alt: "VinUniversity", className: "max-h-11 max-w-full object-contain" },
                 ].map((logo) => (
                   <div
                     key={logo.alt}
-                    className="flex h-28 w-56 items-center justify-center rounded-xl border border-rule/50 bg-white px-5"
+                    className="inline-flex items-center justify-center rounded-xl border border-rule/50 bg-white px-3 py-2"
                   >
                     <img
                       src={logo.src}
                       alt={logo.alt}
-                      className={"max-h-16 max-w-full object-contain"}
+                      className={logo.className ?? "max-h-16 w-auto object-contain"}
                     />
                   </div>
                 ))}
@@ -323,21 +324,19 @@ function Index() {
               {/* Row 2 */}
               <div className="flex flex-wrap items-center justify-center gap-10">
                 {[
-                  { src: "/assets/mpi_logo_v2.png", alt: "IMPRS-IS" },
-                  {src: "/assets/university-of-stuttgart-logo.png", alt: "University of Stuttgart", className: "max-h-22 max-w-full object-contain",},
-                  // { src: "/assets/eth-zurich_logo.jpg", alt: "ETH Zurich" },
-                  // { src: "/assets/hhu_logo.png", alt: "HHU" },
-                  // { src: "/assets/utah_logo.png", alt: "UTAH" },
-
+                  { src: "/assets/logo/dfki_logo.png", alt: "DFKI" },
+                  { src: "/assets/logo/mpi_logo_v2.png", alt: "IMPRS-IS" },
+                  {src: "/assets/logo/university-of-stuttgart-logo.png", alt: "University of Stuttgart", className: "max-h-22 max-w-full object-contain",},
+                  { src: "/assets/logo/DTU.png", alt: "TU Denmark" },
                 ].map((logo) => (
                   <div
                     key={logo.alt}
-                    className="flex h-28 w-56 items-center justify-center rounded-xl border border-rule/50 bg-white px-5"
+                    className="inline-flex items-center justify-center rounded-xl border border-rule/50 bg-white px-3 py-2"
                   >
                     <img
                       src={logo.src}
                       alt={logo.alt}
-                      className={logo.className ?? "max-h-16 max-w-full object-contain"}
+                      className={logo.className ?? "max-h-16 w-auto object-contain"}
                     />
                   </div>
                 ))}
@@ -531,7 +530,7 @@ function Index() {
                 className="rounded-xl border border-rule/60 bg-card/60 p-8"
               >
                 <div className="text-[11px] uppercase tracking-[0.22em] text-accent">
-                  Contribution {s.n}
+                  Key Idea {s.n}
                 </div>
 
                 <h3 className="mt-3 font-serif text-3xl">
@@ -553,8 +552,24 @@ function Index() {
       <section className="mx-auto max-w-6xl px-6 pb-16">
         <SectionHeader
           kicker="Results · Real World"
-          title="Six tasks on an ALOHA and UR5 Robot"
+          title="Nine tasks on an ALOHA, VRH-3 and UR5 Robot"
         />
+        {/* Coca-Cola task */}
+        <figure className="mb-6 overflow-hidden rounded-xl">
+          <video
+            className="mx-auto w-[80%]"
+            autoPlay
+            loop
+            muted
+            playsInline
+            controls
+          >
+            <source
+              src="/assets/realrobot_videos/cocacola.mp4"
+              type="video/mp4"
+            />
+          </video>
+        </figure>
 
         <div className="grid gap-6">
           {realTaskRows.map((row, idx) => (
@@ -611,17 +626,17 @@ function Index() {
                   </div>
 
                   <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
-                    <span className="max-w-[100%] text-sm font-medium leading-relaxed">
+                    <span className="flex-1 text-sm font-medium leading-relaxed">
                       {r.task}
                     </span>
 
-                    {/* <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                      <span>{r.shots} demos</span>
+                    <span className="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                      {r.shots} demos
+                    </span>
 
-                      <span className="font-serif text-base normal-case tracking-normal text-accent">
-                        {r.success}
-                      </span>
-                    </div> */}
+                    <span className="font-serif text-base text-accent">
+                      {r.success}
+                    </span>
                   </figcaption>
                 </figure>
               ))}
@@ -654,17 +669,28 @@ function Index() {
               </div>
 
               <figcaption className="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
-                <span className="max-w-[100%] text-sm font-medium leading-relaxed">
+                {/* <span className="max-w-[50%] text-sm font-medium leading-relaxed">
                   {task.task}
                 </span>
 
-                {/* <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                <div className="flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                   <span>{task.shots} demos</span>
 
                   <span className="font-serif text-base normal-case tracking-normal text-accent">
-                    Success
+                    {task.success}
                   </span>
                 </div> */}
+                <span className="flex-1 text-sm font-medium leading-relaxed">
+                  {task.task}
+                </span>
+
+                <span className="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                  {task.shots} demos
+                </span>
+
+                <span className="font-serif text-base text-accent">
+                  {task.success}
+                </span>
               </figcaption>
             </figure>
           ))}
@@ -767,19 +793,19 @@ function Index() {
             </thead>
             <tbody>
               {[
-                { method: "Diff. Policy",  avg: "72.4", d10: "50.5", goal: "68.3", object: "92.5", spatial: "78.3" },
-                { method: "Octo",          avg: "75.1", d10: "51.1", goal: "84.6", object: "85.7", spatial: "78.9" },
-                { method: "Open-VLA",      avg: "76.5", d10: "53.7", goal: "79.2", object: "88.4", spatial: "84.7" },
-                { method: "Spatial-VLA",   avg: "78.1", d10: "55.5", goal: "78.6", object: "89.9", spatial: "88.2" },
-                { method: "CoT-VLA",       avg: "69.0", d10: "87.6", goal: "91.6", object: "87.5", spatial: "81.1" },
-                { method: "DreamVLA",      avg: "92.6", d10: "89.5", goal: "89.5", object: "94.0", spatial: "97.5" },
-                { method: "Groot-N1.0",    avg: "93.9", d10: "90.6", goal: "93.0", object: "97.6", spatial: "94.4" },
-                { method: "Groot-N1.5",    avg: "94.6", d10: "92.8", goal: "92.8", object: "98.4", spatial: "94.4" },
-                { method: "EO-1",          avg: "94.1", d10: "91.4", goal: "98.6", object: "96.6", spatial: "89.8" },
-                { method: "Think-Act",     avg: "84.4", d10: "70.9", goal: "87.1", object: "91.4", spatial: "88.3" },
-                { method: "SmolVLA",       avg: "92.5", d10: "82.0", goal: "96.0", object: "99.0", spatial: "93.0" },
-                { method: "π₀ Fast",       avg: "85.5", d10: "60.2", goal: "88.6", object: "96.8", spatial: "96.4" },
-                { method: "π₀",            avg: "94.6", d10: "90.0", goal: "95.4", object: "98.2", spatial: "94.6" },
+                { method: "Diff. Policy (Chi et al., RSS 2023)",  avg: "72.4", d10: "50.5", goal: "68.3", object: "92.5", spatial: "78.3" },
+                { method: "Octo (Ghosh et al., Arxiv 2024)",          avg: "75.1", d10: "51.1", goal: "84.6", object: "85.7", spatial: "78.9" },
+                { method: "Open-VLA (Kim et al., CoRL 2024)",      avg: "76.5", d10: "53.7", goal: "79.2", object: "88.4", spatial: "84.7" },
+                { method: "Spatial-VLA (Qu et al., RSS 2025)",   avg: "78.1", d10: "55.5", goal: "78.6", object: "89.9", spatial: "88.2" },
+                { method: "CoT-VLA (Zhao et al., CVPR 2025)",       avg: "69.0", d10: "87.6", goal: "91.6", object: "87.5", spatial: "81.1" },
+                { method: "DreamVLA (Zhang et al., NeurIPS 2025)",      avg: "92.6", d10: "89.5", goal: "89.5", object: "94.0", spatial: "97.5" },
+                { method: "Groot-N1.0 (Bjorck et al., NVIDIA 2025)",    avg: "93.9", d10: "90.6", goal: "93.0", object: "97.6", spatial: "94.4" },
+                { method: "Groot-N1.5 (Bjorck et al., NVIDIA 2025)",    avg: "94.6", d10: "92.8", goal: "92.8", object: "98.4", spatial: "94.4" },
+                { method: "EO-1 (Qu et al., Arxiv 2026)",          avg: "94.1", d10: "91.4", goal: "98.6", object: "96.6", spatial: "89.8" },
+                { method: "Think-Act (Huang et al., NVIDIA 2025)",     avg: "84.4", d10: "70.9", goal: "87.1", object: "91.4", spatial: "88.3" },
+                { method: "SmolVLA (Shukor et al., Hugging Face 2025)",       avg: "92.5", d10: "82.0", goal: "96.0", object: "99.0", spatial: "93.0" },
+                { method: "π₀ Fast (Pertsch et al., Physical Intelligence 2025)",       avg: "85.5", d10: "60.2", goal: "88.6", object: "96.8", spatial: "96.4" },
+                { method: "π₀ (Black et al., Physical Intelligence 2025)",            avg: "94.6", d10: "90.0", goal: "95.4", object: "98.2", spatial: "94.6" },
               ].map((row) => (
                 <tr key={row.method} className="border-b border-rule/40">
                   <td className="px-5 py-4 font-medium">{row.method}</td>
@@ -803,6 +829,178 @@ function Index() {
         </div>
       </section>
 
+        {/* TABLE: FEW-SHOT COMPARISON */}
+        <section className="mx-auto max-w-6xl px-6 pb-16">
+          <SectionHeader
+            kicker="Few-shot Adaptation"
+            title="Performance under limited demonstration budgets"
+          />
+          <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-rule/70 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                  <th className="px-5 py-3 text-left font-medium">
+                    Method
+                  </th>
+
+                  <th
+                    colSpan={4}
+                    className="px-5 py-3 text-center font-medium border-r border-rule/70"
+                  >
+                    40% Data
+                  </th>
+
+                  <th
+                    colSpan={4}
+                    className="px-5 py-3 text-center font-medium"
+                  >
+                    10% Data
+                  </th>
+                </tr>
+
+                <tr className="border-b border-rule/70">
+                  <th className="px-5 py-3" />
+
+                  <th className="px-5 py-3 text-center font-medium">
+                    Avg
+                  </th>
+
+                  <th className="px-5 py-3 text-center font-medium">
+                    10
+                  </th>
+
+                  <th className="px-5 py-3 text-center font-medium">
+                    Object
+                  </th>
+
+                  <th className="px-5 py-3 text-center font-medium border-r border-rule/70">
+                    Spatial
+                  </th>
+
+                  <th className="px-5 py-3 text-center font-medium">
+                    Avg
+                  </th>
+
+                  <th className="px-5 py-3 text-center font-medium">
+                    10
+                  </th>
+
+                  <th className="px-5 py-3 text-center font-medium">
+                    Object
+                  </th>
+
+                  <th className="px-5 py-3 text-center font-medium">
+                    Spatial
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {[
+                  {
+                    method: "π₀ (Black et al., Physical Intelligence 2025)",
+                    d40: ["89.9", "82.0", "95.2", "89.6"],
+                    d10: ["77.6", "59.0", "80.6", "83.4"],
+                  },
+                  {
+                    method: "Groot-N1.5 (Bjorck et al., NVIDIA 2025)",
+                    d40: ["91.4", "84.5", "98.9", "90.6"],
+                    d10: ["78.2", "62.6", "85.7", "85.7"],
+                  },
+                  {
+                    method: "EO-1 (Qu et al., Arxiv 2026)",
+                    d40: ["91.0", "88.4", "96.0", "86.8"],
+                    d10: ["82.2", "65.0", "89.6", "83.0"],
+                  },
+                  {
+                    method: "SmolVLA (Shukor et al., Hugging Face 2025)",
+                    d40: ["90.3", "80.0", "96.0", "90.0"],
+                    d10: ["77.3", "51.3", "86.0", "81.0"],
+                  },
+                ].map((row) => (
+                  <tr
+                    key={row.method}
+                    className="border-b border-rule/40"
+                  >
+                    <td className="px-5 py-4 font-medium">
+                      {row.method}
+                    </td>
+
+                    <td className="px-5 py-4 font-serif text-lg text-center">
+                      {row.d40[0]}
+                    </td>
+
+                    <td className="px-5 py-4 font-serif text-lg text-center">
+                      {row.d40[1]}
+                    </td>
+
+                    <td className="px-5 py-4 font-serif text-lg text-center">
+                      {row.d40[2]}
+                    </td>
+
+                    <td className="px-5 py-4 font-serif text-lg text-center border-r border-rule/40">
+                      {row.d40[3]}
+                    </td>
+
+                    <td className="px-5 py-4 font-serif text-lg text-center">
+                      {row.d10[0]}
+                    </td>
+
+                    <td className="px-5 py-4 font-serif text-lg text-center">
+                      {row.d10[1]}
+                    </td>
+
+                    <td className="px-5 py-4 font-serif text-lg text-center">
+                      {row.d10[2]}
+                    </td>
+
+                    <td className="px-5 py-4 font-serif text-lg text-center">
+                      {row.d10[3]}
+                    </td>
+                  </tr>
+                ))}
+
+                <tr className="bg-accent/15">
+                  <td className="px-5 py-4 font-bold text-accent">
+                    ▸ FOCA (Ours)
+                  </td>
+
+                  <td className="px-5 py-4 text-center font-serif text-lg font-bold text-accent">
+                    94.0
+                  </td>
+
+                  <td className="px-5 py-4 text-center font-serif text-lg font-bold text-accent">
+                    88.0
+                  </td>
+
+                  <td className="px-5 py-4 text-center font-serif text-lg font-bold text-accent">
+                    99.6
+                  </td>
+
+                  <td className="px-5 py-4 text-center font-serif text-lg font-bold text-accent border-r border-accent/30">
+                    93.6
+                  </td>
+
+                  <td className="px-5 py-4 text-center font-serif text-lg font-bold text-accent">
+                    85.3
+                  </td>
+
+                  <td className="px-5 py-4 text-center font-serif text-lg font-bold text-accent">
+                    69.4
+                  </td>
+
+                  <td className="px-5 py-4 text-center font-serif text-lg font-bold text-accent">
+                    90.4
+                  </td>
+
+                  <td className="px-5 py-4 text-center font-serif text-lg font-bold text-accent">
+                    89.4
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
       {/* TABLE */}
       <section className="mx-auto max-w-6xl px-6 pb-16">
