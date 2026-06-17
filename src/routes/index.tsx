@@ -394,10 +394,10 @@ function Index() {
               {/* Row 2 */}
               <div className="flex flex-wrap items-center justify-center gap-10">
                 {[
-                  { src: "/assets/logo/DTU.png", alt: "TU Denmark", className: "max-h-20 max-w-full object-contain", },
+                  { src: "/assets/logo/DTU.png", alt: "TU Denmark", className: "max-h-18 max-w-full object-contain", },
                   {src: "/assets/logo/university-of-stuttgart-logo.png", alt: "University of Stuttgart", className: "max-h-24 max-w-full object-contain",},
-                  { src: "/assets/logo/mpi_logo_v2.png", alt: "IMPRS-IS", className: "max-h-20 max-w-full object-contain", },
-                  { src: "/assets/logo/dfki_logo.png", alt: "DFKI", className: "max-h-20 max-w-full object-contain", },
+                  { src: "/assets/logo/mpi_logo_v2.png", alt: "IMPRS-IS", className: "max-h-18 max-w-full object-contain", },
+                  { src: "/assets/logo/dfki_logo.png", alt: "DFKI", className: "max-h-19 max-w-full object-contain", },
                 ].map((logo) => (
                   <div
                     key={logo.alt}
