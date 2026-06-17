@@ -1,8 +1,17 @@
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, FileText, Github, Database, Play } from "lucide-react";
 const TITLE = "FOCA: Future-Oriented Conditioning for Data-Efficient Vision-Language-Action Adaptation";
-
 const SHORT = "Parameter-efficient adaptation of Vision-Language-Action models using future-oriented conditioning.";
+
+const sections = [
+  { id: "abstract", label: "Abstract" },
+  { id: "method", label: "Method" },
+  { id: "real-world", label: "Real World" },
+  { id: "simulation", label: "Simulation" },
+  { id: "comparison", label: "Results" },
+  { id: "citation", label: "Citation" },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -114,14 +123,14 @@ const realTaskRows = [
 const additionalRealTasks = [
   {
     task: "Place the object onto the jig by aligning with the pins.",
-    shots: 100,
+    shots: '98 demos',
     success: "58% -> 84%",
     video: "/assets/realrobot_videos/part_placing_vrh3.mp4",
   },
   {
     task: "Place the object onto the jig by aligning with the pins.",
-    shots: 100,
-    success: "58% -> 84%",
+    shots: '',
+    success: "",
     video: "/assets/realrobot_videos/part-placing_gr00tn1.5_paint.MOV",
   },
 ];
@@ -221,17 +230,78 @@ const simTaskRows = [
 
 const baselineRows = [
   { method: "Control-VLA (Li et al., CoRL 2025)",  d100: "95.6", d40: "91.3", d10: "78.4" },
-  { method: "LoRA (r=64) (Hu et al., Microsoft 2021)",  d100: "94.2", d40: "90.2", d10: "78.2" },
+  { method: "LoRA (r=64) (Hu et al., ICLR 2022)",  d100: "94.2", d40: "90.2", d10: "78.2" },
   { method: "DoRA (r=64) (Liu et al., ICML 2024)",  d100: "94.7", d40: "92.0", d10: "78.6" },
   { method: "FOCA (ours)",         d100: "96.6", d40: "94.0", d10: "85.3", best: true },
 ];
 
 function Index() {
+  const [activeSection, setActiveSection] = useState("abstract");
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: "-40% 0px -40% 0px",
+      }
+    );
+
+    sections.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
   return (
     <main className="min-h-screen">
+      <div className="fixed left-0 top-1/2 z-50 hidden -translate-y-1/2 xl:block group">
+        <nav
+          className="
+            ml-2
+            -translate-x-[85%]
+            transition-transform
+            duration-300
+            ease-out
+            group-hover:translate-x-0
+          "
+        >
+          <div className="relative rounded-xl border border-rule/70 bg-card/90 p-4 backdrop-blur-md shadow-lg">
+            <ul className="space-y-4">
+              {sections.map(section => (
+                <li key={section.id}>
+                  <a
+                    href={`#${section.id}`}
+                    className={`flex items-center gap-3 text-sm transition-colors ${
+                      activeSection === section.id
+                        ? "text-accent font-semibold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <span
+                      className={`h-2 w-2 rounded-full transition-colors ${
+                        activeSection === section.id
+                          ? "bg-accent"
+                          : "bg-muted-foreground/30"
+                      }`}
+                    />
+
+                    {section.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </nav>
+      </div>
       {/* HERO */}
       <header className="relative overflow-hidden">
-        <div className="mx-auto max-w-6xl px-6 pt-14 pb-10 md:pt-20">
+        <div className="mx-auto max-w-5xl px-6 pt-14 pb-10 md:pt-20">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-2 rounded-full border border-rule/60 bg-card/60 px-3 py-1">
               <img
@@ -305,7 +375,7 @@ function Index() {
               {/* Row 1 */}
               <div className="flex flex-wrap items-center justify-center gap-10">
                 {[
-                  { src: "/assets/logo/vinrobotics_logo_v2.svg", alt: "VinRobotics", className: "h-10 w-auto object-contain" },
+                  { src: "/assets/logo/vinrobotics_logo_v2.svg", alt: "VinRobotics", className: "h-11 w-auto object-contain" },
                   { src: "/assets/logo/vinuniversity_logo.jpg", alt: "VinUniversity", className: "max-h-11 max-w-full object-contain" },
                 ].map((logo) => (
                   <div
@@ -324,10 +394,10 @@ function Index() {
               {/* Row 2 */}
               <div className="flex flex-wrap items-center justify-center gap-10">
                 {[
-                  { src: "/assets/logo/dfki_logo.png", alt: "DFKI" },
-                  { src: "/assets/logo/mpi_logo_v2.png", alt: "IMPRS-IS" },
-                  {src: "/assets/logo/university-of-stuttgart-logo.png", alt: "University of Stuttgart", className: "max-h-22 max-w-full object-contain",},
-                  { src: "/assets/logo/DTU.png", alt: "TU Denmark" },
+                  { src: "/assets/logo/DTU.png", alt: "TU Denmark", className: "max-h-20 max-w-full object-contain", },
+                  {src: "/assets/logo/university-of-stuttgart-logo.png", alt: "University of Stuttgart", className: "max-h-24 max-w-full object-contain",},
+                  { src: "/assets/logo/mpi_logo_v2.png", alt: "IMPRS-IS", className: "max-h-20 max-w-full object-contain", },
+                  { src: "/assets/logo/dfki_logo.png", alt: "DFKI", className: "max-h-20 max-w-full object-contain", },
                 ].map((logo) => (
                   <div
                     key={logo.alt}
@@ -355,7 +425,7 @@ function Index() {
         </div>
 
         {/* hero figure */}
-        <div className="mx-auto max-w-6xl px-6 pb-16">
+        <div className="mx-auto max-w-5xl px-6 pb-16">
           <figure className="overflow-hidden rounded-xl border border-rule/70 bg-card shadow-sm">
             <img
               src="/assets/FOCA.png"
@@ -372,7 +442,7 @@ function Index() {
       </header>
 
       {/* ABSTRACT */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
+      <section className="mx-auto max-w-5xl px-6 pb-16" id="abstract">
         <SectionHeader kicker="Abstract" title="Data-efficient adaptation through future-oriented reasoning." />
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
           <aside className="space-y-4 text-sm">
@@ -432,7 +502,7 @@ function Index() {
       </section>
 
       {/* METHOD */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
+      <section className="mx-auto max-w-5xl px-6 pb-16" id="method">
         <SectionHeader kicker="Method" title="Explicit prediction. Implicit alignment. Better adaptation." />
         <figure className="overflow-hidden rounded-xl border border-rule/70 bg-card">
           {/* <img
@@ -549,7 +619,7 @@ function Index() {
       </section>
 
       {/* REAL-WORLD */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
+      <section className="mx-auto max-w-5xl px-6 pb-16" id="real-world">
         <SectionHeader
           kicker="Results · Real World"
           title="Nine tasks on an ALOHA, VRH-3 and UR5 Robot"
@@ -685,7 +755,7 @@ function Index() {
                 </span>
 
                 <span className="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                  {task.shots} demos
+                  {task.shots}
                 </span>
 
                 <span className="font-serif text-base text-accent">
@@ -698,7 +768,7 @@ function Index() {
       </section>
 
       {/* SIMULATION */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
+      <section className="mx-auto max-w-5xl px-6 pb-16" id="simulation">
         <SectionHeader kicker="Results · Simulation" title="Several LIBERO and ROBOCASA tasks." />
 
         <div className="grid gap-6">
@@ -777,7 +847,7 @@ function Index() {
 
 
       {/* TABLE: FOCA vs VLA models */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
+      <section className="mx-auto max-w-5xl px-6 pb-16" id="comparison">
         <SectionHeader kicker="Comparison" title="FOCA vs wide range of VLA models when using full 100% data" />
         <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
           <table className="w-full text-sm">
@@ -830,7 +900,7 @@ function Index() {
       </section>
 
         {/* TABLE: FEW-SHOT COMPARISON */}
-        <section className="mx-auto max-w-6xl px-6 pb-16">
+        <section className="mx-auto max-w-5xl px-6 pb-16">
           <SectionHeader
             kicker="Few-shot Adaptation"
             title="Performance under limited demonstration budgets"
@@ -1003,7 +1073,7 @@ function Index() {
         </section>
 
       {/* TABLE */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
+      <section className="mx-auto max-w-5xl px-6 pb-16">
         <SectionHeader kicker="Comparison" title="Comparison with general and task-specific PEFT methods for VLA adaptation in LIBERO" />
         <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
           <table className="w-full text-sm">
@@ -1033,7 +1103,7 @@ function Index() {
       </section>
 
       {/* TABLE 2 */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
+      <section className="mx-auto max-w-5xl px-6 pb-16">
         <SectionHeader kicker="Comparison" title="Performance comparison between FOCA variants and pseudo-actions learned via IGM from DreamGen-generated synthetic videos" />
         <div className="overflow-x-auto rounded-xl border border-rule/70 bg-card">
           <table className="w-full text-sm">
@@ -1067,7 +1137,7 @@ function Index() {
       </section>
 
       {/* BIBTEX */}
-      <section className="mx-auto max-w-6xl px-6 pb-24">
+      <section className="mx-auto max-w-5xl px-6 pb-24" id="citation">
         <SectionHeader kicker="Citation" title="BibTeX" />
         <pre className="overflow-x-auto rounded-xl border border-rule/70 bg-ink p-6 text-xs leading-relaxed text-paper">
 {`@inproceedings{foca2026,
@@ -1080,7 +1150,7 @@ function Index() {
       </section>
 
       <footer className="border-t border-rule/70">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">
           <span>© 2026 — Project site template</span>
           <span>Built for academic use</span>
         </div>
