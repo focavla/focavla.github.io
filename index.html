@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FOCA: Future-Oriented Conditioning for Data-Efficient Vision-Language-Action Adaptation</title>
+  <meta name="description" content="Parameter-efficient adaptation of Vision-Language-Action models using future-oriented conditioning." />
+  <meta property="og:title" content="FOCA: Future-Oriented Conditioning for Data-Efficient Vision-Language-Action Adaptation" />
+  <meta property="og:description" content="Parameter-efficient adaptation of Vision-Language-Action models using future-oriented conditioning." />
+  <meta property="og:type" content="article" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind v3 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            serif: ['"Source Serif 4"', '"Source Serif Pro"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          spacing: {
+            '15': '3.75rem',
+            '18': '4.5rem',
+            '19': '4.75rem',
+          },
+          colors: {
+            background: 'oklch(var(--background) / <alpha-value>)',
+            foreground: 'oklch(var(--foreground) / <alpha-value>)',
+            muted: {
+              DEFAULT: 'oklch(var(--muted) / <alpha-value>)',
+              foreground: 'oklch(var(--muted-foreground) / <alpha-value>)',
+            },
+            accent: {
+              DEFAULT: 'oklch(var(--accent) / <alpha-value>)',
+              foreground: 'oklch(var(--accent-foreground) / <alpha-value>)',
+            },
+            primary: {
+              DEFAULT: 'oklch(var(--primary) / <alpha-value>)',
+              foreground: 'oklch(var(--primary-foreground) / <alpha-value>)',
+            },
+            card: {
+              DEFAULT: 'oklch(var(--card) / <alpha-value>)',
+              foreground: 'oklch(var(--card-foreground) / <alpha-value>)',
+            },
+            border: 'oklch(var(--border) / <alpha-value>)',
+            ring: 'oklch(var(--ring) / <alpha-value>)',
+            ink: 'oklch(var(--ink) / <alpha-value>)',
+            paper: 'oklch(var(--paper) / <alpha-value>)',
+            rule: 'oklch(var(--rule) / <alpha-value>)',
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    :root {
+      --radius: 0.5rem;
+      /* oklch channels only (no wrapper) so Tailwind opacity modifiers work */
+      --paper: 0.985 0.005 95;
+      --ink: 0.22 0.02 250;
+      --background: var(--paper);
+      --foreground: var(--ink);
+      --muted: 0.955 0.01 90;
+      --muted-foreground: 0.45 0.02 250;
+      --accent: 0.62 0.18 35;
+      --accent-foreground: 0.98 0.005 95;
+      --primary: 0.32 0.08 255;
+      --primary-foreground: 0.98 0.005 95;
+      --card: 1 0 0;
+      --card-foreground: var(--ink);
+      --border: 0.88 0.01 90;
+      --rule: 0.78 0.015 90;
+      --ring: var(--accent);
+    }
+
+    *, *::before, *::after { border-color: oklch(var(--border)); }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+    body {
+      background-color: oklch(var(--background));
+      color: oklch(var(--foreground));
+      font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+      background-image: radial-gradient(oklch(0 0 0 / 0.025) 1px, transparent 1px);
+      background-size: 22px 22px;
+      margin: 0;
+    }
+    h1, h2, h3, h4 { font-family: "Source Serif 4", "Source Serif Pro", Georgia, serif; letter-spacing: -0.01em; }
+    code, pre { font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+    /* Side nav hover reveal */
+    .side-nav-wrapper { transform: translateX(-85%); transition: transform 0.3s ease-out; }
+    .side-nav-wrapper:hover { transform: translateX(0); }
+
+    /* Link button hover */
+    .link-btn:hover { background-color: oklch(var(--accent)); border-color: oklch(var(--accent)); }
+    .link-btn:hover .arrow-icon { transform: translate(2px, -2px); }
+    .arrow-icon { transition: transform 0.15s; }
+  </style>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen">
+
+  <!-- SIDE NAV (xl only) -->
+  <div class="fixed left-0 top-1/2 z-50 hidden -translate-y-1/2 xl:block">
+    <nav class="ml-2 side-nav-wrapper">
+      <div class="relative rounded-xl border border-rule/70 bg-card/90 p-4 backdrop-blur-md shadow-lg">
+        <ul class="space-y-4">
+          <li><a href="#abstract" data-nav="abstract" class="nav-link flex items-center gap-3 text-sm transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2 w-2 rounded-full bg-muted-foreground/30 transition-colors"></span>Abstract</a></li>
+          <li><a href="#method" data-nav="method" class="nav-link flex items-center gap-3 text-sm transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2 w-2 rounded-full bg-muted-foreground/30 transition-colors"></span>Method</a></li>
+          <li><a href="#real-world" data-nav="real-world" class="nav-link flex items-center gap-3 text-sm transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2 w-2 rounded-full bg-muted-foreground/30 transition-colors"></span>Real World</a></li>
+          <li><a href="#simulation" data-nav="simulation" class="nav-link flex items-center gap-3 text-sm transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2 w-2 rounded-full bg-muted-foreground/30 transition-colors"></span>Simulation</a></li>
+          <li><a href="#comparison" data-nav="comparison" class="nav-link flex items-center gap-3 text-sm transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2 w-2 rounded-full bg-muted-foreground/30 transition-colors"></span>Results</a></li>
+          <li><a href="#citation" data-nav="citation" class="nav-link flex items-center gap-3 text-sm transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2 w-2 rounded-full bg-muted-foreground/30 transition-colors"></span>Citation</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <!-- HERO -->
+  <header class="relative overflow-hidden">
+    <div class="mx-auto max-w-5xl px-6 pt-14 pb-10 md:pt-20">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-2 rounded-full border border-rule/60 bg-card/60 px-3 py-1">
+          <img src="assets/logo/icml_logo.svg" alt="ICML" class="h-15 w-auto" />
+          <span class="text-[11px] font-semibold uppercase tracking-[0.14em]">ICML 2026</span>
+        </span>
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-rule/60 bg-card/60 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">Robot Learning</span>
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-rule/60 bg-card/60 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">Vision-Language-Action</span>
+      </div>
+
+      <h1 class="mt-8 font-serif text-4xl leading-[1.04] tracking-tight md:text-6xl">
+        FOCA: Future-Oriented Conditioning for Data-Efficient <span class="text-accent">Vision-Language-Action</span> Adaptation
+        <span class="block text-muted-foreground text-3xl md:text-4xl mt-3 font-normal italic">
+          learning new manipulation skills from a handful of demonstrations
+        </span>
+      </h1>
+
+      <!-- Authors -->
+      <div class="mt-8 max-w-5xl text-base text-foreground/90">
+        <p class="leading-relaxed">
+          Duc Minh Nguyen<sup>*1,2</sup>,
+          Nghiem Tuong Diep<sup>*1,2</sup>,
+          Binh Gia Nguyen<sup>*1,2</sup>,
+          Trong-Bao Ho<sup>1</sup>,
+          Doanh Le<sup>2</sup>,
+          Tan Q. Nguyen<sup>1</sup>,
+          Thien-Loc Ha<sup>1</sup>,
+          Nhiem Tran<sup>1</sup>,
+          Bao Thach<sup>1,3</sup>,
+          Nhat X. Tran<sup>1</sup>,
+          Tuan A. Tran<sup>4</sup>,
+          Artur Habuda<sup>5</sup>,
+          Philip Lund M&oslash;ller<sup>5</sup>,
+          Tran Nguyen Le<sup>5</sup>,
+          Daniel Sonntag<sup>4,6</sup>,
+          Mathias Niepert<sup>7,8</sup>,
+          Khoa D. Doan<sup>2</sup>,
+          Vu Duong<sup>2</sup>,
+          Hung Quoc Ngo<sup>1</sup>,
+          Minh N. Vu<sup>1,2</sup>,
+          Duy M. H. Nguyen<sup>&dagger;4,7,8</sup>,
+          An Thai Le<sup>&dagger;1,2</sup>,
+          Ngo Anh Vien<sup>&dagger;1,2</sup>
+        </p>
+        <p class="mt-3 text-sm text-muted-foreground leading-relaxed">
+          * Equal contribution &nbsp;&middot;&nbsp; &dagger; Senior Authors
+        </p>
+        <p class="mt-2 text-sm text-muted-foreground leading-relaxed">
+          <sup>1</sup> VinRobotics, Vietnam &nbsp;&middot;&nbsp;
+          <sup>2</sup> Center for AI Research, VinUniversity, Vietnam &nbsp;&middot;&nbsp;
+          <sup>3</sup> University of Utah, USA
+          <br />
+          <sup>4</sup> German Research Center for Artificial Intelligence (DFKI) &nbsp;&middot;&nbsp;
+          <sup>5</sup> Technical University of Denmark
+          <br />
+          <sup>6</sup> University of Oldenburg &nbsp;&middot;&nbsp;
+          <sup>7</sup> University of Stuttgart &nbsp;&middot;&nbsp;
+          <sup>8</sup> Max Planck Research School for Intelligent Systems (IMPRS-IS)
+        </p>
+
+        <!-- Logos Row 1 -->
+        <div class="mt-8 space-y-8">
+          <div class="flex flex-wrap items-center justify-center gap-10">
+            <div class="inline-flex items-center justify-center rounded-xl border border-rule/50 bg-white px-3 py-2">
+              <img src="assets/logo/vinrobotics_logo_v2.svg" alt="VinRobotics" class="h-11 w-auto object-contain" />
+            </div>
+            <div class="inline-flex items-center justify-center rounded-xl border border-rule/50 bg-white px-3 py-2">
+              <img src="assets/logo/vinuniversity_logo.jpg" alt="VinUniversity" class="max-h-11 max-w-full object-contain" />
+            </div>
+          </div>
+          <!-- Logos Row 2 -->
+          <div class="flex flex-wrap items-center justify-center gap-10">
+            <div class="inline-flex items-center justify-center rounded-xl border border-rule/50 bg-white px-3 py-2">
+              <img src="assets/logo/DTU.png" alt="TU Denmark" class="max-h-18 max-w-full object-contain" />
+            </div>
+            <div class="inline-flex items-center justify-center rounded-xl border border-rule/50 bg-white px-3 py-2">
+              <img src="assets/logo/university-of-stuttgart-logo.png" alt="University of Stuttgart" class="max-h-24 max-w-full object-contain" />
+            </div>
+            <div class="inline-flex items-center justify-center rounded-xl border border-rule/50 bg-white px-3 py-2">
+              <img src="assets/logo/mpi_logo_v2.png" alt="IMPRS-IS" class="max-h-18 max-w-full object-contain" />
+            </div>
+            <div class="inline-flex items-center justify-center rounded-xl border border-rule/50 bg-white px-3 py-2">
+              <img src="assets/logo/dfki_logo.png" alt="DFKI" class="max-h-19 max-w-full object-contain" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Links -->
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="#" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
+          <i data-lucide="file-text" class="h-4 w-4"></i><span>Paper</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
+        </a>
+        <a href="#" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
+          <i data-lucide="file-text" class="h-4 w-4"></i><span>arXiv</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
+        </a>
+        <a href="#" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
+          <i data-lucide="github" class="h-4 w-4"></i><span>Code</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
+        </a>
+        <a href="#" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
+          <i data-lucide="database" class="h-4 w-4"></i><span>Dataset</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
+        </a>
+        <a href="#" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
+          <i data-lucide="play" class="h-4 w-4"></i><span>Video</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Hero figure -->
+    <div class="mx-auto max-w-5xl px-6 pb-16">
+      <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card shadow-sm">
+        <img src="assets/FOCA.png" alt="Overview of FOCA framework" width="1600" height="900" class="w-full" />
+        <figcaption class="border-t border-rule/70 px-5 py-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+          Figure 1 &mdash; Overview of FOCA. Our framework injects future-oriented conditioning into VLA adaptation through explicit future interaction prediction and implicit alignment to future goals, enabling data-efficient learning and action-free co-training with video world models.
+        </figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <!-- ABSTRACT -->
+  <section class="mx-auto max-w-5xl px-6 pb-16" id="abstract">
+    <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
+      <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Abstract</span>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Data-efficient adaptation through future-oriented reasoning.</h2>
+    </div>
+    <div class="grid gap-10 md:grid-cols-[1fr_2fr]">
+      <aside class="space-y-4 text-sm">
+        <div>
+          <div class="text-[13px] uppercase tracking-[0.18em] text-muted-foreground">LIBERO</div>
+          <div class="font-serif text-3xl">95.7%</div>
+          <div class="mt-1 text-xs text-muted-foreground">Beats &pi;0 (100% data) by only <span class="font-serif text-[1.2rem] text-accent">40% data</span></div>
+        </div>
+        <div>
+          <div class="text-[13px] uppercase tracking-[0.18em] text-muted-foreground">ROBOCASA GAIN</div>
+          <div class="font-serif text-3xl">+7&ndash;12%</div>
+          <div class="mt-1 text-xs text-muted-foreground">over prior adaptation methods</div>
+        </div>
+        <div>
+          <div class="text-[13px] uppercase tracking-[0.18em] text-muted-foreground">REAL ROBOTS</div>
+          <div class="font-serif text-3xl">+26%</div>
+          <div class="mt-1 text-xs text-muted-foreground">absolute improvement</div>
+        </div>
+      </aside>
+      <div class="font-serif text-lg leading-[1.7] text-foreground/90">
+        <p>Can robots learn new skills from only a handful of demonstrations?</p>
+        <p>Despite impressive progress, today's Vision-Language-Action (VLA) models struggle in this setting. We show that performance drops sharply as training data becomes scarce, exposing a critical weakness of current <strong>few-shot adaptation</strong> methods.</p>
+        <p class="mt-4">FOCA addresses this challenge by teaching robots to reason about <strong>future interactions</strong> rather than simply imitate actions. By combining future-oriented prediction with alignment to future goals, FOCA enables efficient adaptation, supports long-horizon decision making, and naturally enables <strong>action-free co-training with video world models</strong> through synthetic video supervision. The result is a simple and scalable framework that achieves <strong>state-of-the-art performance</strong> across simulation and real-world robot manipulation tasks.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- METHOD -->
+  <section class="mx-auto max-w-5xl px-6 pb-16" id="method">
+    <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
+      <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Method</span>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Explicit prediction. Implicit alignment. Better adaptation.</h2>
+    </div>
+    <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+      <video class="w-full rounded-lg" autoplay loop playsinline controls>
+        <source src="assets/teaser.mp4" type="video/mp4" />
+      </video>
+      <figcaption class="border-t border-rule/70 px-5 py-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        Figure 2 &mdash; Video overview of FOCA. We predict task-grounded future interactions and align them with future goals to enable data-efficient adaptation and action-free learning.
+      </figcaption>
+    </figure>
+
+    <div class="mt-12 space-y-6">
+      <!-- Key Idea 01 -->
+      <article class="rounded-xl border border-rule/60 bg-card/60 p-8">
+        <div class="text-[11px] uppercase tracking-[0.22em] text-accent">Key Idea 01</div>
+        <h3 class="mt-3 font-serif text-3xl">Explicit Future Prediction</h3>
+        <div class="mt-4 max-w-4xl text-base leading-8 text-muted-foreground">
+          <p>FOCA predicts task-grounded future interaction embeddings in latent space using representative tokens and a lightweight decoder. By focusing on robot-object interactions rather than the entire scene, it captures anticipated outcomes while remaining robust to task-irrelevant content.</p>
+          <img src="assets/explicit_overview.png" alt="Explicit Future Prediction" class="mx-auto mt-6 max-w-3xl rounded-lg border border-rule/60" />
+        </div>
+      </article>
+      <!-- Key Idea 02 -->
+      <article class="rounded-xl border border-rule/60 bg-card/60 p-8">
+        <div class="text-[11px] uppercase tracking-[0.22em] text-accent">Key Idea 02</div>
+        <h3 class="mt-3 font-serif text-3xl">Implicit Future Alignment</h3>
+        <div class="mt-4 max-w-4xl text-base leading-8 text-muted-foreground">
+          <p>FOCA aligns interaction tokens with future goal observations through an implicit future-conditioning objective. This enables long-horizon reasoning and can be interpreted as learning value-like representations of future task completion.</p>
+          <img src="assets/implicit_overview.png" alt="Implicit Future Alignment" class="mx-auto mt-6 max-w-4xl rounded-lg border border-rule/60" />
+        </div>
+      </article>
+      <!-- Key Idea 03 -->
+      <article class="rounded-xl border border-rule/60 bg-card/60 p-8">
+        <div class="text-[11px] uppercase tracking-[0.22em] text-accent">Key Idea 03</div>
+        <h3 class="mt-3 font-serif text-3xl">Action-Free Supervision</h3>
+        <div class="mt-4 max-w-4xl text-base leading-8 text-muted-foreground">
+          <p>FOCA naturally supports action-free co-training with synthetic videos generated by video world models. Unlike methods that require pseudo-actions or inverse dynamics, FOCA can learn directly from future visual trajectories.</p>
+          <img src="assets/action_free.png" alt="Action-Free Supervision" class="mx-auto mt-6 max-w-4xl rounded-lg border border-rule/60" />
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- REAL-WORLD RESULTS -->
+  <section class="mx-auto max-w-5xl px-6 pb-16" id="real-world">
+    <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
+      <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Results &middot; Real World</span>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Nine tasks on an ALOHA, VRH-3 and UR5 Robot</h2>
+    </div>
+
+    <!-- Coca-Cola task -->
+    <figure class="mb-6 overflow-hidden rounded-xl">
+      <video class="mx-auto w-[80%]" autoplay loop muted playsinline controls>
+        <source src="assets/realrobot_videos/cocacola.mp4" type="video/mp4" />
+      </video>
+    </figure>
+
+    <div class="grid gap-6">
+      <!-- Row 1 -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Bag task -->
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/bag_fail.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/bag_succ.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+            <span class="flex-1 text-sm font-medium leading-relaxed">Align the bag and fully open the zipper.</span>
+            <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">150 demos</span>
+            <span class="font-serif text-base text-accent">25% -&gt; 45%</span>
+          </figcaption>
+        </figure>
+        <!-- Dispense napkin -->
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/dispense_napkin_fail.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/dispense_napkin_succ.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+            <span class="flex-1 text-sm font-medium leading-relaxed">Dispense a napkin from a container</span>
+            <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">100 demos</span>
+            <span class="font-serif text-base text-accent">20% -&gt; 45%</span>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Table setting -->
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/table_fail.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/table_succ.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+            <span class="flex-1 text-sm font-medium leading-relaxed">Center the plate on the mat, place the bowl inside it, and set the chopsticks on the right.</span>
+            <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">150 demos</span>
+            <span class="font-serif text-base text-accent">10% -&gt; 45%</span>
+          </figcaption>
+        </figure>
+        <!-- Shoelaces -->
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/shoes_fail.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/shoes_succ.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+            <span class="flex-1 text-sm font-medium leading-relaxed">Tie the shoelaces into a secure knot.</span>
+            <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">150 demos</span>
+            <span class="font-serif text-base text-accent">70% -&gt; 95%</span>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Row 3 -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Bulk material -->
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/bulk_fail.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/bulk_succ.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+            <span class="flex-1 text-sm font-medium leading-relaxed">Pick up a bowl containing bulk material and pour the material into a designated target container.</span>
+            <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">100 demos</span>
+            <span class="font-serif text-base text-accent">40% -&gt; 50%</span>
+          </figcaption>
+        </figure>
+        <!-- Test tube -->
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/tube_fail.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/tube_succ.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+            <span class="flex-1 text-sm font-medium leading-relaxed">Move the prompted-color test tube to the target.</span>
+            <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">40 demos</span>
+            <span class="font-serif text-base text-accent">5% -&gt; 30%</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- Additional real tasks (success-only) -->
+    <div class="grid gap-6 lg:grid-cols-2 mt-6">
+      <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+        <div class="relative h-[280px] overflow-hidden">
+          <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+          <video class="h-full w-full object-cover" autoplay loop muted playsinline><source src="assets/realrobot_videos/part_placing_vrh3.mp4" type="video/mp4" /></video>
+        </div>
+        <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+          <span class="flex-1 text-sm font-medium leading-relaxed">Place the object onto the jig by aligning with the pins.</span>
+          <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">98 demos</span>
+          <span class="font-serif text-base text-accent">58% -&gt; 84%</span>
+        </figcaption>
+      </figure>
+      <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+        <div class="relative h-[280px] overflow-hidden">
+          <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+          <video class="h-full w-full object-cover" autoplay loop muted playsinline><source src="assets/realrobot_videos/part-placing_gr00tn1.5_paint.MOV" type="video/mp4" /></video>
+        </div>
+        <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+          <span class="flex-1 text-sm font-medium leading-relaxed">Place the object onto the jig by aligning with the pins.</span>
+          <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground"></span>
+          <span class="font-serif text-base text-accent"></span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- SIMULATION RESULTS -->
+  <section class="mx-auto max-w-5xl px-6 pb-16" id="simulation">
+    <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
+      <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Results &middot; Simulation</span>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Several LIBERO and ROBOCASA tasks.</h2>
+    </div>
+
+    <div class="grid gap-6">
+      <!-- Sim Row 1 -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_open_the_top_drawer_and_put_the_bowl_inside_failure.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_open_the_top_drawer_and_put_the_bowl_inside_success.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="text-sm font-medium">Open the top drawer and place the bowl inside.</span></figcaption>
+        </figure>
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_alphabet_soup_and_place_it_in_the_basket_failure.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_alphabet_soup_and_place_it_in_the_basket_success.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="text-sm font-medium">Pick up the alphabet soup and place it in the basket.</span></figcaption>
+        </figure>
+      </div>
+
+      <!-- Sim Row 2 -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_bbq_sauce_and_place_it_in_the_basket_failure.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_bbq_sauce_and_place_it_in_the_basket_success.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="text-sm font-medium">Pick up the BBQ sauce and place it in the basket.</span></figcaption>
+        </figure>
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_failure.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_success.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="text-sm font-medium">Pick up the black bowl between the plate and the ramekin and place it on the plate.</span></figcaption>
+        </figure>
+      </div>
+
+      <!-- Sim Row 3 -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_failure.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_success.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="text-sm font-medium">Pick up the black bowl from the table center and place it on the plate.</span></figcaption>
+        </figure>
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/turn off the front center burner of the stove_failure.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/turn off the front center burner of the stove_success.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="text-sm font-medium">Turn off the front center burner of the stove.</span></figcaption>
+        </figure>
+      </div>
+
+      <!-- Sim Row 4 -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/pick the mango from the cabinet and place it on the counter_failure.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/pick the mango from the cabinet and place it on the counter_success.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="text-sm font-medium">Pick the mango from the cabinet and place it on the counter.</span></figcaption>
+        </figure>
+        <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
+          <div class="grid grid-cols-2">
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/pick the mug from the counter and place it under the coffee machine dispenser_failure.mp4" type="video/mp4" /></video>
+            </div>
+            <div class="relative">
+              <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+              <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/pick the mug from the counter and place it under the coffee machine dispenser_success.mp4" type="video/mp4" /></video>
+            </div>
+          </div>
+          <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="text-sm font-medium">Pick the mug from the counter and place it under the coffee machine dispenser.</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABLE: FOCA vs VLA models -->
+  <section class="mx-auto max-w-5xl px-6 pb-16" id="comparison">
+    <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
+      <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Comparison</span>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">FOCA vs wide range of VLA models when using full 100% data</h2>
+    </div>
+    <div class="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            <th class="px-5 py-3 font-medium">Method</th>
+            <th class="px-5 py-3 font-medium">Avg</th>
+            <th class="px-5 py-3 font-medium">10</th>
+            <th class="px-5 py-3 font-medium">Goal</th>
+            <th class="px-5 py-3 font-medium">Object</th>
+            <th class="px-5 py-3 font-medium">Spatial</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">Diff. Policy (Chi et al., RSS 2023)</td><td class="px-5 py-4 font-serif text-lg">72.4</td><td class="px-5 py-4 font-serif text-lg">50.5</td><td class="px-5 py-4 font-serif text-lg">68.3</td><td class="px-5 py-4 font-serif text-lg">92.5</td><td class="px-5 py-4 font-serif text-lg">78.3</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">Octo (Ghosh et al., Arxiv 2024)</td><td class="px-5 py-4 font-serif text-lg">75.1</td><td class="px-5 py-4 font-serif text-lg">51.1</td><td class="px-5 py-4 font-serif text-lg">84.6</td><td class="px-5 py-4 font-serif text-lg">85.7</td><td class="px-5 py-4 font-serif text-lg">78.9</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">Open-VLA (Kim et al., CoRL 2024)</td><td class="px-5 py-4 font-serif text-lg">76.5</td><td class="px-5 py-4 font-serif text-lg">53.7</td><td class="px-5 py-4 font-serif text-lg">79.2</td><td class="px-5 py-4 font-serif text-lg">88.4</td><td class="px-5 py-4 font-serif text-lg">84.7</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">Spatial-VLA (Qu et al., RSS 2025)</td><td class="px-5 py-4 font-serif text-lg">78.1</td><td class="px-5 py-4 font-serif text-lg">55.5</td><td class="px-5 py-4 font-serif text-lg">78.6</td><td class="px-5 py-4 font-serif text-lg">89.9</td><td class="px-5 py-4 font-serif text-lg">88.2</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">CoT-VLA (Zhao et al., CVPR 2025)</td><td class="px-5 py-4 font-serif text-lg">69.0</td><td class="px-5 py-4 font-serif text-lg">87.6</td><td class="px-5 py-4 font-serif text-lg">91.6</td><td class="px-5 py-4 font-serif text-lg">87.5</td><td class="px-5 py-4 font-serif text-lg">81.1</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">DreamVLA (Zhang et al., NeurIPS 2025)</td><td class="px-5 py-4 font-serif text-lg">92.6</td><td class="px-5 py-4 font-serif text-lg">89.5</td><td class="px-5 py-4 font-serif text-lg">89.5</td><td class="px-5 py-4 font-serif text-lg">94.0</td><td class="px-5 py-4 font-serif text-lg">97.5</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">Groot-N1.0 (Bjorck et al., NVIDIA 2025)</td><td class="px-5 py-4 font-serif text-lg">93.9</td><td class="px-5 py-4 font-serif text-lg">90.6</td><td class="px-5 py-4 font-serif text-lg">93.0</td><td class="px-5 py-4 font-serif text-lg">97.6</td><td class="px-5 py-4 font-serif text-lg">94.4</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">Groot-N1.5 (Bjorck et al., NVIDIA 2025)</td><td class="px-5 py-4 font-serif text-lg">94.6</td><td class="px-5 py-4 font-serif text-lg">92.8</td><td class="px-5 py-4 font-serif text-lg">92.8</td><td class="px-5 py-4 font-serif text-lg">98.4</td><td class="px-5 py-4 font-serif text-lg">94.4</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">EO-1 (Qu et al., Arxiv 2026)</td><td class="px-5 py-4 font-serif text-lg">94.1</td><td class="px-5 py-4 font-serif text-lg">91.4</td><td class="px-5 py-4 font-serif text-lg">98.6</td><td class="px-5 py-4 font-serif text-lg">96.6</td><td class="px-5 py-4 font-serif text-lg">89.8</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">Think-Act (Huang et al., NVIDIA 2025)</td><td class="px-5 py-4 font-serif text-lg">84.4</td><td class="px-5 py-4 font-serif text-lg">70.9</td><td class="px-5 py-4 font-serif text-lg">87.1</td><td class="px-5 py-4 font-serif text-lg">91.4</td><td class="px-5 py-4 font-serif text-lg">88.3</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">SmolVLA (Shukor et al., Hugging Face 2025)</td><td class="px-5 py-4 font-serif text-lg">92.5</td><td class="px-5 py-4 font-serif text-lg">82.0</td><td class="px-5 py-4 font-serif text-lg">96.0</td><td class="px-5 py-4 font-serif text-lg">99.0</td><td class="px-5 py-4 font-serif text-lg">93.0</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">&pi;&#8320; Fast (Pertsch et al., Physical Intelligence 2025)</td><td class="px-5 py-4 font-serif text-lg">85.5</td><td class="px-5 py-4 font-serif text-lg">60.2</td><td class="px-5 py-4 font-serif text-lg">88.6</td><td class="px-5 py-4 font-serif text-lg">96.8</td><td class="px-5 py-4 font-serif text-lg">96.4</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">&pi;&#8320; (Black et al., Physical Intelligence 2025)</td><td class="px-5 py-4 font-serif text-lg">94.6</td><td class="px-5 py-4 font-serif text-lg">90.0</td><td class="px-5 py-4 font-serif text-lg">95.4</td><td class="px-5 py-4 font-serif text-lg">98.2</td><td class="px-5 py-4 font-serif text-lg">94.6</td></tr>
+          <!-- FOCA row -->
+          <tr class="bg-accent/10 last:border-0">
+            <td class="px-5 py-4 font-medium text-accent font-bold">&#9654; FOCA (Ours)</td>
+            <td class="px-5 py-4 font-serif text-lg text-accent font-bold">96.6</td>
+            <td class="px-5 py-4 font-serif text-lg text-accent font-bold">92.4</td>
+            <td class="px-5 py-4 font-serif text-lg text-accent font-bold">97.4</td>
+            <td class="px-5 py-4 font-serif text-lg text-accent font-bold">99.8</td>
+            <td class="px-5 py-4 font-serif text-lg text-accent font-bold">97.0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TABLE: FEW-SHOT COMPARISON -->
+  <section class="mx-auto max-w-5xl px-6 pb-16">
+    <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
+      <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Few-shot Adaptation</span>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Performance under limited demonstration budgets</h2>
+    </div>
+    <div class="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-rule/70 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            <th class="px-5 py-3 text-left font-medium">Method</th>
+            <th colspan="4" class="px-5 py-3 text-center font-medium border-r border-rule/70">40% Data</th>
+            <th colspan="4" class="px-5 py-3 text-center font-medium">10% Data</th>
+          </tr>
+          <tr class="border-b border-rule/70">
+            <th class="px-5 py-3"></th>
+            <th class="px-5 py-3 text-center font-medium">Avg</th>
+            <th class="px-5 py-3 text-center font-medium">10</th>
+            <th class="px-5 py-3 text-center font-medium">Object</th>
+            <th class="px-5 py-3 text-center font-medium border-r border-rule/70">Spatial</th>
+            <th class="px-5 py-3 text-center font-medium">Avg</th>
+            <th class="px-5 py-3 text-center font-medium">10</th>
+            <th class="px-5 py-3 text-center font-medium">Object</th>
+            <th class="px-5 py-3 text-center font-medium">Spatial</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-rule/40">
+            <td class="px-5 py-4 font-medium">&pi;&#8320; (Black et al., Physical Intelligence 2025)</td>
+            <td class="px-5 py-4 font-serif text-lg text-center">89.9</td><td class="px-5 py-4 font-serif text-lg text-center">82.0</td><td class="px-5 py-4 font-serif text-lg text-center">95.2</td><td class="px-5 py-4 font-serif text-lg text-center border-r border-rule/40">89.6</td>
+            <td class="px-5 py-4 font-serif text-lg text-center">77.6</td><td class="px-5 py-4 font-serif text-lg text-center">59.0</td><td class="px-5 py-4 font-serif text-lg text-center">80.6</td><td class="px-5 py-4 font-serif text-lg text-center">83.4</td>
+          </tr>
+          <tr class="border-b border-rule/40">
+            <td class="px-5 py-4 font-medium">Groot-N1.5 (Bjorck et al., NVIDIA 2025)</td>
+            <td class="px-5 py-4 font-serif text-lg text-center">91.4</td><td class="px-5 py-4 font-serif text-lg text-center">84.5</td><td class="px-5 py-4 font-serif text-lg text-center">98.9</td><td class="px-5 py-4 font-serif text-lg text-center border-r border-rule/40">90.6</td>
+            <td class="px-5 py-4 font-serif text-lg text-center">78.2</td><td class="px-5 py-4 font-serif text-lg text-center">62.6</td><td class="px-5 py-4 font-serif text-lg text-center">85.7</td><td class="px-5 py-4 font-serif text-lg text-center">85.7</td>
+          </tr>
+          <tr class="border-b border-rule/40">
+            <td class="px-5 py-4 font-medium">EO-1 (Qu et al., Arxiv 2026)</td>
+            <td class="px-5 py-4 font-serif text-lg text-center">91.0</td><td class="px-5 py-4 font-serif text-lg text-center">88.4</td><td class="px-5 py-4 font-serif text-lg text-center">96.0</td><td class="px-5 py-4 font-serif text-lg text-center border-r border-rule/40">86.8</td>
+            <td class="px-5 py-4 font-serif text-lg text-center">82.2</td><td class="px-5 py-4 font-serif text-lg text-center">65.0</td><td class="px-5 py-4 font-serif text-lg text-center">89.6</td><td class="px-5 py-4 font-serif text-lg text-center">83.0</td>
+          </tr>
+          <tr class="border-b border-rule/40">
+            <td class="px-5 py-4 font-medium">SmolVLA (Shukor et al., Hugging Face 2025)</td>
+            <td class="px-5 py-4 font-serif text-lg text-center">90.3</td><td class="px-5 py-4 font-serif text-lg text-center">80.0</td><td class="px-5 py-4 font-serif text-lg text-center">96.0</td><td class="px-5 py-4 font-serif text-lg text-center border-r border-rule/40">90.0</td>
+            <td class="px-5 py-4 font-serif text-lg text-center">77.3</td><td class="px-5 py-4 font-serif text-lg text-center">51.3</td><td class="px-5 py-4 font-serif text-lg text-center">86.0</td><td class="px-5 py-4 font-serif text-lg text-center">81.0</td>
+          </tr>
+          <!-- FOCA -->
+          <tr class="bg-accent/15">
+            <td class="px-5 py-4 font-bold text-accent">&#9654; FOCA (Ours)</td>
+            <td class="px-5 py-4 text-center font-serif text-lg font-bold text-accent">94.0</td><td class="px-5 py-4 text-center font-serif text-lg font-bold text-accent">88.0</td><td class="px-5 py-4 text-center font-serif text-lg font-bold text-accent">99.6</td><td class="px-5 py-4 text-center font-serif text-lg font-bold text-accent border-r border-accent/30">93.6</td>
+            <td class="px-5 py-4 text-center font-serif text-lg font-bold text-accent">85.3</td><td class="px-5 py-4 text-center font-serif text-lg font-bold text-accent">69.4</td><td class="px-5 py-4 text-center font-serif text-lg font-bold text-accent">90.4</td><td class="px-5 py-4 text-center font-serif text-lg font-bold text-accent">89.4</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TABLE: PEFT comparison -->
+  <section class="mx-auto max-w-5xl px-6 pb-16">
+    <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
+      <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Comparison</span>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Comparison with general and task-specific PEFT methods for VLA adaptation in LIBERO</h2>
+    </div>
+    <div class="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            <th class="px-5 py-3 font-medium">Method</th>
+            <th class="px-5 py-3 font-medium">100%</th>
+            <th class="px-5 py-3 font-medium">40%</th>
+            <th class="px-5 py-3 font-medium">10%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">Control-VLA (Li et al., CoRL 2025)</td><td class="px-5 py-4 font-serif text-lg">95.6</td><td class="px-5 py-4 font-serif text-lg">91.3</td><td class="px-5 py-4 font-serif text-lg">78.4</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">LoRA (r=64) (Hu et al., ICLR 2022)</td><td class="px-5 py-4 font-serif text-lg">94.2</td><td class="px-5 py-4 font-serif text-lg">90.2</td><td class="px-5 py-4 font-serif text-lg">78.2</td></tr>
+          <tr class="border-b border-rule/40"><td class="px-5 py-4 font-medium">DoRA (r=64) (Liu et al., ICML 2024)</td><td class="px-5 py-4 font-serif text-lg">94.7</td><td class="px-5 py-4 font-serif text-lg">92.0</td><td class="px-5 py-4 font-serif text-lg">78.6</td></tr>
+          <tr class="bg-accent/10 last:border-0">
+            <td class="px-5 py-4 font-medium text-accent font-bold">&#9654; FOCA (ours)</td>
+            <td class="px-5 py-4 font-serif text-lg text-accent font-bold">96.6</td>
+            <td class="px-5 py-4 font-serif text-lg text-accent font-bold">94.0</td>
+            <td class="px-5 py-4 font-serif text-lg text-accent font-bold">85.3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TABLE: FOCA variants + DreamGen -->
+  <section class="mx-auto max-w-5xl px-6 pb-16">
+    <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
+      <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Comparison</span>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Performance comparison between FOCA variants and pseudo-actions learned via IGM from DreamGen-generated synthetic videos</h2>
+    </div>
+    <div class="overflow-x-auto rounded-xl border border-rule/70 bg-card">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-rule/70 text-left text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            <th class="px-5 py-3 font-medium">Data scale</th>
+            <th class="px-5 py-3 font-medium">&pi;0 baseline</th>
+            <th class="px-5 py-3 font-medium">IGM</th>
+            <th class="px-5 py-3 font-medium">FOCA Implicit</th>
+            <th class="px-5 py-3 font-medium">FOCA + DreamGen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-rule/40">
+            <td class="px-5 py-4 font-medium">40% data</td>
+            <td class="px-5 py-4 font-serif text-lg">89.9</td>
+            <td class="px-5 py-4 font-serif text-lg">90.2</td>
+            <td class="px-5 py-4 font-serif text-lg">93.0</td>
+            <td class="px-5 py-4 font-serif text-lg text-accent font-bold">95.7</td>
+          </tr>
+          <tr class="last:border-0">
+            <td class="px-5 py-4 font-medium">10% data</td>
+            <td class="px-5 py-4 font-serif text-lg">77.6</td>
+            <td class="px-5 py-4 font-serif text-lg">76.8</td>
+            <td class="px-5 py-4 font-serif text-lg">83.6</td>
+            <td class="px-5 py-4 font-serif text-lg text-accent font-bold">86.4</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- BIBTEX -->
+  <section class="mx-auto max-w-5xl px-6 pb-24" id="citation">
+    <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
+      <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Citation</span>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">BibTeX</h2>
+    </div>
+    <pre class="overflow-x-auto rounded-xl border border-rule/70 bg-ink p-6 text-xs leading-relaxed text-paper">@inproceedings{foca2026,
+    title={FOCA: Future-Oriented Conditioning for Data-Efficient Vision-Language-Action Adaptation},
+    author={Nguyen, Duc Minh and Diep, Nghiem Tuong and Nguyen, Binh Gia and Ho, Trong-Bao and Le, Doanh and Nguyen, Tan Q. and Ha, Thien-Loc and Tran, Nhiem and Thach, Bao and Tran, Nhat X. and Tran, Tuan A. and Habuda, Artur and M&oslash;ller, Philip Lund and Le, Tran Nguyen and Sonntag, Daniel and Niepert, Mathias and Doan, Khoa D. and Duong, Vu and Ngo, Hung Quoc and Vu, Minh N. and Nguyen, Duy M. H. and Le, An Thai and Vien, Ngo Anh},
+    booktitle={International Conference on Machine Learning (ICML)},
+    year={2026}
+}</pre>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-rule/70">
+    <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+      <span>&copy; 2026 &mdash; Project site template</span>
+      <span>Built for academic use</span>
+    </div>
+  </footer>
+
+  <!-- Intersection Observer for side nav -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Initialize Lucide icons
+      if (window.lucide) lucide.createIcons();
+
+      // Scroll spy
+      var sectionIds = ["abstract", "method", "real-world", "simulation", "comparison", "citation"];
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            // Remove active from all
+            document.querySelectorAll(".nav-link").forEach(function (link) {
+              link.classList.remove("text-accent", "font-semibold");
+              link.classList.add("text-muted-foreground");
+              link.querySelector(".nav-dot").classList.remove("bg-accent");
+              link.querySelector(".nav-dot").classList.add("bg-muted-foreground/30");
+            });
+            // Set active
+            var active = document.querySelector('[data-nav="' + entry.target.id + '"]');
+            if (active) {
+              active.classList.add("text-accent", "font-semibold");
+              active.classList.remove("text-muted-foreground");
+              active.querySelector(".nav-dot").classList.add("bg-accent");
+              active.querySelector(".nav-dot").classList.remove("bg-muted-foreground/30");
+            }
+          }
+        });
+      }, { rootMargin: "-40% 0px -40% 0px" });
+
+      sectionIds.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+    });
+  </script>
+</body>
+</html>
