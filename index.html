@@ -516,31 +516,37 @@
       </div>
     </div>
 
-    <!-- Additional real tasks (success-only) -->
-    <div class="grid gap-6 lg:grid-cols-2 mt-6">
-      <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
-        <div class="relative h-[280px] overflow-hidden">
-          <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
-          <video class="h-full w-full object-cover" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/part_placing_vrh3.mp4" type="video/mp4" /></video>
+    <!-- VRH3 comparison (full width for larger side-by-side) -->
+    <figure class="mt-6 overflow-hidden rounded-xl border border-rule/70 bg-card">
+      <div class="grid grid-cols-2">
+        <div class="relative">
+          <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
+          <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
+          <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/VRH3_fail.mp4" type="video/mp4" /></video>
         </div>
-        <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
-          <span class="flex-1 text-sm font-medium leading-relaxed">Place the object onto the jig by aligning with the pins.</span>
-          <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">98 demos</span>
-          <span class="font-serif text-base text-accent">58% -&gt; 84%</span>
-        </figcaption>
-      </figure>
-      <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
-        <div class="relative h-[280px] overflow-hidden">
+        <div class="relative">
           <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
-          <video class="h-full w-full object-cover" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/part-placing_gr00tn1.5_paint.mp4" type="video/mp4" /></video>
+          <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
+          <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/VRH3_succ.mp4" type="video/mp4" /></video>
         </div>
-        <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
-          <span class="flex-1 text-sm font-medium leading-relaxed">Other Industry Task: Place the object onto the jig by aligning with the pins.</span>
-          <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground"></span>
-          <span class="font-serif text-base text-accent"></span>
-        </figcaption>
-      </figure>
-    </div>
+      </div>
+      <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+        <span class="flex-1 text-sm font-medium leading-relaxed">Place the object onto the jig by aligning with the pins.</span>
+        <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">98 demos</span>
+        <span class="font-serif text-base text-accent">58% -&gt; 84%</span>
+      </figcaption>
+    </figure>
+
+    <!-- Other industry task (success only) -->
+    <figure class="mt-6 overflow-hidden rounded-xl border border-rule/70 bg-card">
+      <div class="relative">
+        <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
+        <video class="mx-auto w-[80%]" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/part-placing_gr00tn1.5_paint.mp4" type="video/mp4" /></video>
+      </div>
+      <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
+        <span class="flex-1 text-sm font-medium leading-relaxed">Other Industry Task: Place the object onto the jig by aligning with the pins.</span>
+      </figcaption>
+    </figure>
   </section>
 
   <!-- SIMULATION RESULTS -->
