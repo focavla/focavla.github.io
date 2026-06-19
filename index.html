@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>document.documentElement.classList.add("js");</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f7f6f1" />
+  <link rel="icon" type="image/png" href="assets/ICML_2026.png" />
+  <link rel="apple-touch-icon" href="assets/ICML_2026.png" />
   <title>FOCA: Future-Oriented Conditioning for Data-Efficient Vision-Language-Action Adaptation</title>
   <meta name="description" content="Parameter-efficient adaptation of Vision-Language-Action models using future-oriented conditioning." />
   <meta property="og:title" content="FOCA: Future-Oriented Conditioning for Data-Efficient Vision-Language-Action Adaptation" />
@@ -31,8 +35,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind v3 CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind v3 CDN (pinned). For production, prebuild Tailwind to a static CSS file to drop the runtime dependency and FOUC. -->
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -118,12 +122,31 @@
     .link-btn:hover { background-color: oklch(var(--accent)); border-color: oklch(var(--accent)); }
     .link-btn:hover .arrow-icon { transform: translate(2px, -2px); }
     .arrow-icon { transition: transform 0.15s; }
+
+    /* Disabled link buttons (resource not yet available) */
+    .link-btn.is-disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+
+    /* Scroll-reveal (only hide when JS is active, so no-JS users still see content) */
+    html.js .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; will-change: opacity, transform; }
+    html.js .reveal.is-visible { opacity: 1; transform: none; }
+
+    /* Top scroll-progress bar */
+    #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; z-index: 60; background-color: oklch(var(--accent)); transition: width 0.1s linear; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1 !important; transform: none !important; transition: none; }
+      #nav-indicator, .arrow-icon { transition: none !important; }
+    }
   </style>
 
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- Lucide Icons CDN (pinned) -->
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 </head>
 <body class="min-h-screen">
+
+  <!-- Top scroll-progress bar -->
+  <div id="scroll-progress"></div>
 
   <!-- SIDE NAV (xl only) -->
   <div class="fixed left-0 top-1/2 z-50 hidden -translate-y-1/2 xl:block">
@@ -160,7 +183,7 @@
       </div>
 
       <h1 class="mt-8 font-serif text-4xl leading-[1.04] tracking-tight md:text-6xl">
-        FOCA: Future-Oriented Conditioning for <span class="text-accent">Data-Efficient</span> <span class="text-accent">Vision-Language-Action</span> Adaptation
+        FOCA: Future-Oriented Conditioning for <span class="text-accent">Data-Efficient</span> Vision-Language-Action Adaptation
         <span class="block text-muted-foreground text-3xl md:text-4xl mt-3 font-normal italic">
           learning new manipulation skills from a handful of demonstrations
         </span>
@@ -239,19 +262,16 @@
 
       <!-- Links -->
       <div class="mt-8 flex flex-wrap gap-3">
-        <a href="#" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
+        <a href="#" target="_blank" rel="noopener" aria-disabled="true" title="Coming soon" class="link-btn is-disabled group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
           <i data-lucide="file-text" class="h-4 w-4"></i><span>Paper</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
         </a>
-        <a href="#" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
-          <i data-lucide="file-text" class="h-4 w-4"></i><span>arXiv</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
-        </a>
-        <a href="#" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
+        <a href="#" target="_blank" rel="noopener" aria-disabled="true" title="Coming soon" class="link-btn is-disabled group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
           <i data-lucide="github" class="h-4 w-4"></i><span>Code</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
         </a>
-        <a href="#" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
-          <i data-lucide="database" class="h-4 w-4"></i><span>Dataset</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
+        <a href="https://huggingface.co/collections/vrfai/foca-models" target="_blank" rel="noopener" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
+          <i data-lucide="database" class="h-4 w-4"></i><span>Models and Datasets</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
         </a>
-        <a href="#" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
+        <a href="#method" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
           <i data-lucide="play" class="h-4 w-4"></i><span>Video</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
         </a>
       </div>
@@ -308,7 +328,7 @@
       <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Explicit prediction. Implicit alignment. Better adaptation.</h2>
     </div>
     <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
-      <video class="w-full rounded-lg" autoplay loop playsinline controls>
+      <video class="w-full rounded-lg" autoplay loop muted playsinline controls preload="metadata">
         <source src="assets/teaser.mp4" type="video/mp4" />
       </video>
       <figcaption class="border-t border-rule/70 px-5 py-4 text-[15px] leading-relaxed text-foreground/70">
@@ -324,7 +344,7 @@
         <h3 class="mt-3 font-serif text-3xl">Explicit Future Prediction</h3>
         <div class="mt-4 max-w-4xl text-base leading-8 text-muted-foreground">
           <p>FOCA predicts task-grounded future interaction embeddings in latent space using representative tokens and a lightweight decoder. By focusing on robot-object interactions rather than the entire scene, it captures anticipated outcomes while remaining robust to task-irrelevant content.</p>
-          <img src="assets/explicit_overview.png" alt="Explicit Future Prediction" class="mx-auto mt-6 max-w-3xl rounded-lg border border-rule/60" />
+          <img src="assets/explicit_overview.png" alt="Explicit Future Prediction" class="mx-auto mt-6 max-w-3xl rounded-lg border border-rule/60" / loading="lazy" decoding="async">
         </div>
       </article>
       <!-- Key Idea 02 -->
@@ -333,7 +353,7 @@
         <h3 class="mt-3 font-serif text-3xl">Implicit Future Alignment</h3>
         <div class="mt-4 max-w-4xl text-base leading-8 text-muted-foreground">
           <p>FOCA aligns interaction tokens with future goal observations through an implicit future-conditioning objective. This enables long-horizon reasoning and can be interpreted as learning value-like representations of future task completion.</p>
-          <img src="assets/implicit_overview.png" alt="Implicit Future Alignment" class="mx-auto mt-6 max-w-4xl rounded-lg border border-rule/60" />
+          <img src="assets/implicit_overview.png" alt="Implicit Future Alignment" class="mx-auto mt-6 max-w-4xl rounded-lg border border-rule/60" / loading="lazy" decoding="async">
         </div>
       </article>
       <!-- Key Idea 03 -->
@@ -342,7 +362,7 @@
         <h3 class="mt-3 font-serif text-3xl">Action-Free Supervision</h3>
         <div class="mt-4 max-w-4xl text-base leading-8 text-muted-foreground">
           <p>FOCA naturally supports action-free co-training with synthetic videos generated by video world models. Unlike methods that require pseudo-actions or inverse dynamics, FOCA can learn directly from future visual trajectories.</p>
-          <img src="assets/action_free.png" alt="Action-Free Supervision" class="mx-auto mt-6 max-w-4xl rounded-lg border border-rule/60" />
+          <img src="assets/action_free.png" alt="Action-Free Supervision" class="mx-auto mt-6 max-w-4xl rounded-lg border border-rule/60" / loading="lazy" decoding="async">
         </div>
       </article>
     </div>
@@ -357,7 +377,7 @@
 
     <!-- Coca-Cola task -->
     <figure class="mb-6 overflow-hidden rounded-xl">
-      <video class="mx-auto w-[80%]" autoplay loop muted playsinline controls>
+      <video class="mx-auto w-[80%]" autoplay loop muted playsinline controls preload="none">
         <source src="assets/realrobot_videos/cocacola.mp4" type="video/mp4" />
       </video>
     </figure>
@@ -371,12 +391,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/bag_fail.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/bag_fail.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/bag_succ.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/bag_succ.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
@@ -391,12 +411,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/dispense_napkin_fail.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/dispense_napkin_fail.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/dispense_napkin_succ.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/dispense_napkin_succ.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
@@ -415,12 +435,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/table_fail.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/table_fail.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/table_succ.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/table_succ.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
@@ -435,12 +455,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/shoes_fail.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/shoes_fail.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/shoes_succ.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/shoes_succ.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
@@ -459,12 +479,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/bulk_fail.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/bulk_fail.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/bulk_succ.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/bulk_succ.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
@@ -479,12 +499,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/tube_fail.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/tube_fail.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/realrobot_videos/tube_succ.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/tube_succ.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
@@ -501,7 +521,7 @@
       <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
         <div class="relative h-[280px] overflow-hidden">
           <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
-          <video class="h-full w-full object-cover" autoplay loop muted playsinline><source src="assets/realrobot_videos/part_placing_vrh3.mp4" type="video/mp4" /></video>
+          <video class="h-full w-full object-cover" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/part_placing_vrh3.mp4" type="video/mp4" /></video>
         </div>
         <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
           <span class="flex-1 text-sm font-medium leading-relaxed">Place the object onto the jig by aligning with the pins.</span>
@@ -512,7 +532,7 @@
       <figure class="overflow-hidden rounded-xl border border-rule/70 bg-card">
         <div class="relative h-[280px] overflow-hidden">
           <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
-          <video class="h-full w-full object-cover" autoplay loop muted playsinline><source src="assets/realrobot_videos/part-placing_gr00tn1.5_paint.MOV" type="video/mp4" /></video>
+          <video class="h-full w-full object-cover" autoplay loop muted playsinline preload="none"><source src="assets/realrobot_videos/part-placing_gr00tn1.5_paint.mp4" type="video/mp4" /></video>
         </div>
         <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
           <span class="flex-1 text-sm font-medium leading-relaxed">Other Industry Task: Place the object onto the jig by aligning with the pins.</span>
@@ -538,12 +558,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_open_the_top_drawer_and_put_the_bowl_inside_failure.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/rollout_open_the_top_drawer_and_put_the_bowl_inside_failure.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_open_the_top_drawer_and_put_the_bowl_inside_success.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/rollout_open_the_top_drawer_and_put_the_bowl_inside_success.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="flex-1 text-sm font-medium leading-relaxed">Open the top drawer and place the bowl inside.</span><span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">50 demos</span><span class="font-serif text-base text-accent">94%</span></figcaption>
@@ -553,12 +573,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_alphabet_soup_and_place_it_in_the_basket_failure.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/rollout_pick_up_the_alphabet_soup_and_place_it_in_the_basket_failure.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_alphabet_soup_and_place_it_in_the_basket_success.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/rollout_pick_up_the_alphabet_soup_and_place_it_in_the_basket_success.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="flex-1 text-sm font-medium leading-relaxed">Pick up the alphabet soup and place it in the basket.</span><span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">50 demos</span><span class="font-serif text-base text-accent">96%</span></figcaption>
@@ -572,12 +592,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_bbq_sauce_and_place_it_in_the_basket_failure.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/rollout_pick_up_the_bbq_sauce_and_place_it_in_the_basket_failure.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_bbq_sauce_and_place_it_in_the_basket_success.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/rollout_pick_up_the_bbq_sauce_and_place_it_in_the_basket_success.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="flex-1 text-sm font-medium leading-relaxed">Pick up the BBQ sauce and place it in the basket.</span><span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">50 demos</span><span class="font-serif text-base text-accent">92%</span></figcaption>
@@ -587,12 +607,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_failure.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_failure.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_success.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate_success.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="flex-1 text-sm font-medium leading-relaxed">Pick up the black bowl between the plate and the ramekin and place it on the plate.</span><span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">50 demos</span><span class="font-serif text-base text-accent">95%</span></figcaption>
@@ -606,12 +626,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_failure.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_failure.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_success.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/rollout_pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_success.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="flex-1 text-sm font-medium leading-relaxed">Pick up the black bowl from the table center and place it on the plate.</span><span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">50 demos</span><span class="font-serif text-base text-accent">97%</span></figcaption>
@@ -621,12 +641,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/turn off the front center burner of the stove_failure.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/turn off the front center burner of the stove_failure.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/turn off the front center burner of the stove_success.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/turn off the front center burner of the stove_success.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="flex-1 text-sm font-medium leading-relaxed">Turn off the front center burner of the stove.</span><span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">50 demos</span><span class="font-serif text-base text-accent">91%</span></figcaption>
@@ -640,12 +660,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/pick the mango from the cabinet and place it on the counter_failure.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/pick the mango from the cabinet and place it on the counter_failure.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/pick the mango from the cabinet and place it on the counter_success.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/pick the mango from the cabinet and place it on the counter_success.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="flex-1 text-sm font-medium leading-relaxed">Pick the mango from the cabinet and place it on the counter.</span><span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">50 demos</span><span class="font-serif text-base text-accent">93%</span></figcaption>
@@ -655,12 +675,12 @@
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-red-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Failed</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">Base VLA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/pick the mug from the counter and place it under the coffee machine dispenser_failure.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/pick the mug from the counter and place it under the coffee machine dispenser_failure.mp4" type="video/mp4" /></video>
             </div>
             <div class="relative">
               <span class="absolute left-3 top-3 z-10 rounded-full bg-emerald-500/60 px-4 py-1 text-sm font-bold uppercase tracking-wide text-white backdrop-blur-sm">Success</span>
               <span class="absolute right-3 top-3 z-10 rounded-md bg-black/70 px-3 py-1.5 text-sm font-semibold text-white">FOCA</span>
-              <video class="w-full object-contain" autoplay loop muted playsinline><source src="assets/sim_videos/pick the mug from the counter and place it under the coffee machine dispenser_success.mp4" type="video/mp4" /></video>
+              <video class="w-full object-contain" autoplay loop muted playsinline preload="none"><source src="assets/sim_videos/pick the mug from the counter and place it under the coffee machine dispenser_success.mp4" type="video/mp4" /></video>
             </div>
           </div>
           <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4"><span class="flex-1 text-sm font-medium leading-relaxed">Pick the mug from the counter and place it under the coffee machine dispenser.</span><span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">50 demos</span><span class="font-serif text-base text-accent">90%</span></figcaption>
@@ -774,7 +794,7 @@
 
     <!-- RoboCasa generalization figure -->
     <figure class="mt-10 overflow-hidden rounded-xl border border-rule/70 bg-card">
-      <img src="assets/robocasa_result.png" alt="FOCA generalization performance across Pi-Zero and GR00T N1.5 on RoboCasa" class="w-full" />
+      <img src="assets/robocasa_result.png" alt="FOCA generalization performance across Pi-Zero and GR00T N1.5 on RoboCasa" class="w-full" / loading="lazy" decoding="async">
       <figcaption class="border-t border-rule/70 px-5 py-4 text-[15px] leading-relaxed text-foreground/70">
         <span class="mr-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">Figure 10</span>
         FOCA's generalization performance across &pi;&#8320; and GR00T N1.5 on RoboCasa, with 30 demos (top) and 100 demos (bottom) on the five most challenging tasks.
@@ -866,9 +886,23 @@
 
   <!-- FOOTER -->
   <footer class="border-t border-rule/70">
-    <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-      <span>&copy; 2026 &mdash; Project site template</span>
-      <span>Built for academic use</span>
+    <div class="mx-auto max-w-5xl px-6 py-10">
+      <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div class="text-sm leading-relaxed text-muted-foreground">
+          <div class="font-serif text-base text-foreground">FOCA &middot; ICML 2026</div>
+          <div class="mt-1">Correspondence: <a href="mailto:v.duynhm@vinrobotics.net" class="text-accent hover:underline">v.vienna@vinrobotics.net</a></div>
+        </div>
+        <nav class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+          <a href="#abstract" class="hover:text-foreground">Abstract</a>
+          <a href="#method" class="hover:text-foreground">Method</a>
+          <a href="#real-world" class="hover:text-foreground">Real World</a>
+          <a href="#comparison" class="hover:text-foreground">Results</a>
+          <a href="#citation" class="hover:text-foreground">Citation</a>
+        </nav>
+      </div>
+      <div class="mt-8 border-t border-rule/50 pt-6 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+        &copy; 2026 FOCA Authors &middot; VinRobotics, VinUniversity &amp; collaborators
+      </div>
     </div>
   </footer>
 
@@ -921,6 +955,54 @@
       window.addEventListener("resize", function () {
         if (currentActive) moveIndicator(currentActive);
       });
+
+      var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // Top scroll-progress bar
+      var progress = document.getElementById("scroll-progress");
+      if (progress) {
+        var updateProgress = function () {
+          var h = document.documentElement;
+          var max = h.scrollHeight - h.clientHeight;
+          var pct = max > 0 ? (h.scrollTop || document.body.scrollTop) / max * 100 : 0;
+          progress.style.width = pct + "%";
+        };
+        window.addEventListener("scroll", updateProgress, { passive: true });
+        updateProgress();
+      }
+
+      // Scroll-reveal on section headers, figures, articles, and tables
+      if (!reduceMotion && "IntersectionObserver" in window) {
+        var targets = document.querySelectorAll(
+          "section > div:first-child, section figure, section article, section .overflow-x-auto"
+        );
+        targets.forEach(function (el) { el.classList.add("reveal"); });
+        var revealObs = new IntersectionObserver(function (entries, obs) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              obs.unobserve(entry.target);
+            }
+          });
+        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.08 });
+        targets.forEach(function (el) { revealObs.observe(el); });
+      }
+
+      // Play looping gallery videos only while on screen (saves CPU/bandwidth)
+      if ("IntersectionObserver" in window) {
+        var vids = document.querySelectorAll("video[loop]");
+        var vidObs = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var v = entry.target;
+            if (entry.isIntersecting) {
+              if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+            } else if (!v.paused) {
+              v.pause();
+            }
+          });
+        }, { threshold: 0.25 });
+        vids.forEach(function (v) { v.removeAttribute("autoplay"); vidObs.observe(v); });
+      }
     });
   </script>
 </body>
