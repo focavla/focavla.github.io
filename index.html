@@ -115,12 +115,17 @@
     h1, h2, h3, h4 { font-family: "Source Serif 4", "Source Serif Pro", Georgia, serif; letter-spacing: -0.01em; }
     code, pre { font-family: "JetBrains Mono", ui-monospace, monospace; }
 
+    /* Render desktop at ~80% scale (like browser zoom-out); mobile stays full size */
+    @media (min-width: 1024px) {
+      body { zoom: 0.8; }
+    }
+
     /* Side nav - always visible */
     .side-nav-wrapper { transform: translateX(0); }
 
     /* Link button hover */
     .link-btn:hover { background-color: oklch(var(--accent)); border-color: oklch(var(--accent)); }
-    .link-btn:hover .arrow-icon { transform: translate(2px, -2px); }
+    .link-btn:hover .arrow-icon { transform: translateX(3px); }
     .arrow-icon { transition: transform 0.15s; }
 
     /* Disabled link buttons (resource not yet available) */
@@ -150,7 +155,7 @@
 
   <!-- SIDE NAV (xl only) -->
   <div class="fixed left-0 top-1/2 z-50 hidden -translate-y-1/2 xl:block">
-    <nav class="ml-6 side-nav-wrapper">
+    <nav class="ml-6 side-nav-wrapper" style="zoom: 1.5">
       <div class="mb-5 pl-9 text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">Contents</div>
       <div class="relative">
         <!-- moving indicator -->
@@ -263,16 +268,16 @@
       <!-- Links -->
       <div class="mt-8 flex flex-wrap gap-3">
         <a href="https://openreview.net/pdf?id=0cnDTttyMR" target="_blank" rel="noopener" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
-          <i data-lucide="file-text" class="h-4 w-4"></i><span>Paper</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
+          <i data-lucide="file-text" class="h-4 w-4"></i><span>Paper</span><i data-lucide="arrow-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
         </a>
         <a href="#" target="_blank" rel="noopener" aria-disabled="true" title="Coming soon" class="link-btn is-disabled group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
-          <i data-lucide="github" class="h-4 w-4"></i><span>Code</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
+          <i data-lucide="github" class="h-4 w-4"></i><span>Code</span><i data-lucide="arrow-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
         </a>
         <a href="https://huggingface.co/collections/vrfai/foca-models" target="_blank" rel="noopener" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
-          <i data-lucide="database" class="h-4 w-4"></i><span>Models and Datasets</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
+          <i data-lucide="database" class="h-4 w-4"></i><span>Models and Datasets</span><i data-lucide="arrow-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
         </a>
         <a href="#method" class="link-btn group inline-flex items-center gap-2 rounded-full border border-ink/80 bg-ink px-4 py-2 text-sm font-medium text-paper transition">
-          <i data-lucide="play" class="h-4 w-4"></i><span>Video</span><i data-lucide="arrow-up-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
+          <i data-lucide="play" class="h-4 w-4"></i><span>Video</span><i data-lucide="arrow-right" class="arrow-icon h-3.5 w-3.5 opacity-60"></i>
         </a>
       </div>
     </div>
