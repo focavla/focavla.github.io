@@ -110,15 +110,21 @@
 
   <!-- SIDE NAV (xl only) -->
   <div class="fixed left-0 top-1/2 z-50 hidden -translate-y-1/2 xl:block">
-    <nav class="ml-4 side-nav-wrapper">
-      <div class="relative rounded-xl border border-rule/70 bg-card/90 p-5 backdrop-blur-md shadow-lg">
-        <ul class="space-y-5">
-          <li><a href="#abstract" data-nav="abstract" class="nav-link flex items-center gap-3.5 text-base transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2.5 w-2.5 rounded-full bg-muted-foreground/30 transition-colors"></span>Abstract</a></li>
-          <li><a href="#method" data-nav="method" class="nav-link flex items-center gap-3.5 text-base transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2.5 w-2.5 rounded-full bg-muted-foreground/30 transition-colors"></span>Method</a></li>
-          <li><a href="#real-world" data-nav="real-world" class="nav-link flex items-center gap-3.5 text-base transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2.5 w-2.5 rounded-full bg-muted-foreground/30 transition-colors"></span>Real World</a></li>
-          <li><a href="#simulation" data-nav="simulation" class="nav-link flex items-center gap-3.5 text-base transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2.5 w-2.5 rounded-full bg-muted-foreground/30 transition-colors"></span>Simulation</a></li>
-          <li><a href="#comparison" data-nav="comparison" class="nav-link flex items-center gap-3.5 text-base transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2.5 w-2.5 rounded-full bg-muted-foreground/30 transition-colors"></span>Results</a></li>
-          <li><a href="#citation" data-nav="citation" class="nav-link flex items-center gap-3.5 text-base transition-colors text-muted-foreground hover:text-foreground"><span class="nav-dot h-2.5 w-2.5 rounded-full bg-muted-foreground/30 transition-colors"></span>Citation</a></li>
+    <nav class="ml-6 side-nav-wrapper">
+      <div class="mb-5 pl-9 text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">Contents</div>
+      <div class="relative">
+        <!-- moving indicator -->
+        <span id="nav-indicator" class="pointer-events-none absolute left-0 top-0 flex h-6 items-center transition-transform duration-300 ease-out" style="transform: translateY(0px)">
+          <span class="h-px w-6 bg-accent"></span>
+          <span class="-ml-1 h-1.5 w-1.5 rounded-full bg-accent"></span>
+        </span>
+        <ul class="space-y-4 pl-9">
+          <li><a href="#abstract" data-nav="abstract" class="nav-link group flex items-baseline gap-3 transition-colors"><span class="nav-num font-mono text-[11px] tabular-nums text-muted-foreground/50 transition-colors">01</span><span class="nav-label font-serif text-[15px] text-muted-foreground transition-colors group-hover:text-foreground">Abstract</span></a></li>
+          <li><a href="#method" data-nav="method" class="nav-link group flex items-baseline gap-3 transition-colors"><span class="nav-num font-mono text-[11px] tabular-nums text-muted-foreground/50 transition-colors">02</span><span class="nav-label font-serif text-[15px] text-muted-foreground transition-colors group-hover:text-foreground">Method</span></a></li>
+          <li><a href="#real-world" data-nav="real-world" class="nav-link group flex items-baseline gap-3 transition-colors"><span class="nav-num font-mono text-[11px] tabular-nums text-muted-foreground/50 transition-colors">03</span><span class="nav-label font-serif text-[15px] text-muted-foreground transition-colors group-hover:text-foreground">Real World</span></a></li>
+          <li><a href="#simulation" data-nav="simulation" class="nav-link group flex items-baseline gap-3 transition-colors"><span class="nav-num font-mono text-[11px] tabular-nums text-muted-foreground/50 transition-colors">04</span><span class="nav-label font-serif text-[15px] text-muted-foreground transition-colors group-hover:text-foreground">Simulation</span></a></li>
+          <li><a href="#comparison" data-nav="comparison" class="nav-link group flex items-baseline gap-3 transition-colors"><span class="nav-num font-mono text-[11px] tabular-nums text-muted-foreground/50 transition-colors">05</span><span class="nav-label font-serif text-[15px] text-muted-foreground transition-colors group-hover:text-foreground">Results</span></a></li>
+          <li><a href="#citation" data-nav="citation" class="nav-link group flex items-baseline gap-3 transition-colors"><span class="nav-num font-mono text-[11px] tabular-nums text-muted-foreground/50 transition-colors">06</span><span class="nav-label font-serif text-[15px] text-muted-foreground transition-colors group-hover:text-foreground">Citation</span></a></li>
         </ul>
       </div>
     </nav>
@@ -490,7 +496,7 @@
           <video class="h-full w-full object-cover" autoplay loop muted playsinline><source src="assets/realrobot_videos/part-placing_gr00tn1.5_paint.MOV" type="video/mp4" /></video>
         </div>
         <figcaption class="flex items-center justify-between gap-4 border-t border-rule/70 px-5 py-4">
-          <span class="flex-1 text-sm font-medium leading-relaxed">Place the object onto the jig by aligning with the pins.</span>
+          <span class="flex-1 text-sm font-medium leading-relaxed">Other Industry Task: Place the object onto the jig by aligning with the pins.</span>
           <span class="px-4 text-xs uppercase tracking-[0.18em] text-muted-foreground"></span>
           <span class="font-serif text-base text-accent"></span>
         </figcaption>
@@ -648,7 +654,7 @@
   <section class="mx-auto max-w-5xl px-6 pb-16" id="comparison">
     <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
       <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Comparison</span>
-      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">FOCA vs wide range of VLA models when using full 100% data</h2>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">FOCA vs wide range of VLA models when using full 100% data on LIBERO benchmark</h2>
     </div>
     <div class="overflow-x-auto rounded-xl border border-rule/70 bg-card">
       <table class="w-full text-sm">
@@ -694,7 +700,7 @@
   <section class="mx-auto max-w-5xl px-6 pb-16">
     <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
       <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Few-shot Adaptation</span>
-      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Performance under limited demonstration budgets</h2>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Performance under limited demonstration budgets on LIBERO</h2>
     </div>
     <div class="overflow-x-auto rounded-xl border border-rule/70 bg-card">
       <table class="w-full text-sm">
@@ -844,26 +850,36 @@
       // Initialize Lucide icons
       if (window.lucide) lucide.createIcons();
 
-      // Scroll spy
+      // Scroll spy + moving indicator
       var sectionIds = ["abstract", "method", "real-world", "simulation", "comparison", "citation"];
+      var indicator = document.getElementById("nav-indicator");
+
+      function moveIndicator(link) {
+        if (!indicator || !link) return;
+        var y = link.offsetTop + link.offsetHeight / 2 - indicator.offsetHeight / 2;
+        indicator.style.transform = "translateY(" + y + "px)";
+      }
+
+      function setActive(link) {
+        document.querySelectorAll(".nav-link").forEach(function (l) {
+          l.querySelector(".nav-num").classList.remove("text-accent");
+          l.querySelector(".nav-num").classList.add("text-muted-foreground/50");
+          l.querySelector(".nav-label").classList.remove("text-accent", "font-medium");
+          l.querySelector(".nav-label").classList.add("text-muted-foreground");
+        });
+        link.querySelector(".nav-num").classList.add("text-accent");
+        link.querySelector(".nav-num").classList.remove("text-muted-foreground/50");
+        link.querySelector(".nav-label").classList.add("text-accent", "font-medium");
+        link.querySelector(".nav-label").classList.remove("text-muted-foreground");
+        moveIndicator(link);
+      }
+
+      var currentActive = null;
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
-            // Remove active from all
-            document.querySelectorAll(".nav-link").forEach(function (link) {
-              link.classList.remove("text-accent", "font-semibold");
-              link.classList.add("text-muted-foreground");
-              link.querySelector(".nav-dot").classList.remove("bg-accent");
-              link.querySelector(".nav-dot").classList.add("bg-muted-foreground/30");
-            });
-            // Set active
-            var active = document.querySelector('[data-nav="' + entry.target.id + '"]');
-            if (active) {
-              active.classList.add("text-accent", "font-semibold");
-              active.classList.remove("text-muted-foreground");
-              active.querySelector(".nav-dot").classList.add("bg-accent");
-              active.querySelector(".nav-dot").classList.remove("bg-muted-foreground/30");
-            }
+            currentActive = document.querySelector('[data-nav="' + entry.target.id + '"]');
+            if (currentActive) setActive(currentActive);
           }
         });
       }, { rootMargin: "-40% 0px -40% 0px" });
@@ -871,6 +887,11 @@
       sectionIds.forEach(function (id) {
         var el = document.getElementById(id);
         if (el) observer.observe(el);
+      });
+
+      // Keep indicator aligned if layout shifts (e.g. resize)
+      window.addEventListener("resize", function () {
+        if (currentActive) moveIndicator(currentActive);
       });
     });
   </script>
