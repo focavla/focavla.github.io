@@ -700,15 +700,15 @@
   <section class="mx-auto max-w-5xl px-6 pb-16">
     <div class="mb-10 flex flex-col gap-3 border-t border-rule/70 pt-8">
       <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">Few-shot Adaptation</span>
-      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Performance under limited demonstration budgets on LIBERO</h2>
+      <h2 class="font-serif text-3xl md:text-4xl leading-[1.05] text-foreground">Performance under limited demonstration budgets on LIBERO (top) and ROBOCASA (below)</h2>
     </div>
     <div class="overflow-x-auto rounded-xl border border-rule/70 bg-card">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-rule/70 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
             <th class="px-5 py-3 text-left font-medium">Method</th>
-            <th colspan="4" class="px-5 py-3 text-center font-medium border-r border-rule/70">40% Data</th>
-            <th colspan="4" class="px-5 py-3 text-center font-medium">10% Data</th>
+            <th colspan="4" class="px-5 py-3 text-center font-medium border-r border-rule/70">LIBERO 40% Data</th>
+            <th colspan="4" class="px-5 py-3 text-center font-medium">LIBERO 10% Data</th>
           </tr>
           <tr class="border-b border-rule/70">
             <th class="px-5 py-3"></th>
@@ -752,6 +752,14 @@
         </tbody>
       </table>
     </div>
+
+    <!-- RoboCasa generalization figure -->
+    <figure class="mt-10 overflow-hidden rounded-xl border border-rule/70 bg-card">
+      <img src="assets/robocasa_result.png" alt="FOCA generalization performance across Pi-Zero and GR00T N1.5 on RoboCasa" class="w-full" />
+      <figcaption class="border-t border-rule/70 px-5 py-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        Figure 10 &mdash; FOCA's generalization performance across &pi;&#8320; and GR00T N1.5 on RoboCasa, with 30 demos (top) and 100 demos (bottom) on the five most challenging tasks.
+      </figcaption>
+    </figure>
   </section>
 
   <!-- TABLE: PEFT comparison -->
